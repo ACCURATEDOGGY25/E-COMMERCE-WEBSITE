@@ -7,8 +7,12 @@ import { signToken } from "../lib/jwt.js";
 import { AppError } from "../lib/errors.js";
 import { authenticate, type AuthRequest } from "../middleware/auth.js";
 import { validateBody } from "../middleware/validate.js";
+import { isDemoMode } from "../lib/demoMode.js";
 
 const router = Router();
+
+const DEMO_AUTH_MSG =
+  "Database not configured. Add Supabase URLs to backend/.env, then run: bash scripts/setup.sh";
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -55,6 +59,10 @@ router.post(
   validateBody(registerSchema),
   async (req, res, next) => {
     try {
+      if (isDemoMode()) {
+        throw new AppError(503, DEMO_AUTH_MSG, "DEMO_MODE");
+      }
+
       const { email, password, name, role, storeName } = req.body;
 
       const existing = await prisma.user.findUnique({ where: { email } });
@@ -113,6 +121,10 @@ router.post(
 
 router.post("/login", validateBody(loginSchema), async (req, res, next) => {
   try {
+    if (isDemoMode()) {
+      throw new AppError(503, DEMO_AUTH_MSG, "DEMO_MODE");
+    }
+
     const { email, password } = req.body;
 
     const user = await prisma.user.findUnique({

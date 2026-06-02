@@ -16,6 +16,7 @@ import reviewRoutes from "./routes/reviews.js";
 import vendorRoutes from "./routes/vendors.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { prisma } from "./lib/prisma.js";
+import { isDemoMode } from "./lib/demoMode.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -56,6 +57,14 @@ app.get("/health", (_req, res) => {
 });
 
 app.get("/health/db", async (_req, res) => {
+  if (isDemoMode()) {
+    res.json({
+      status: "ok",
+      database: "demo",
+      hint: "Using demo catalog. Add Supabase URLs to backend/.env, then run: bash scripts/setup.sh",
+    });
+    return;
+  }
   try {
     await prisma.$queryRaw`SELECT 1`;
     res.json({ status: "ok", database: "connected" });
@@ -63,7 +72,7 @@ app.get("/health/db", async (_req, res) => {
     res.status(503).json({
       status: "error",
       database: "unavailable",
-      hint: "Configure backend/.env with Supabase URLs, then run: npm run setup",
+      hint: "Configure backend/.env with Supabase URLs, then run: bash scripts/setup.sh",
     });
   }
 });

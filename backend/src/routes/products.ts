@@ -5,8 +5,18 @@ import { prisma } from "../lib/prisma.js";
 import { AppError } from "../lib/errors.js";
 import { optionalAuth, type AuthRequest } from "../middleware/auth.js";
 import { param } from "../utils/params.js";
+import { isDemoMode } from "../lib/demoMode.js";
+import {
+  filterDemoProducts,
+  findDemoProduct,
+  DEMO_PRODUCTS,
+} from "../lib/demoData.js";
 
 const router = Router();
+
+function demoHeaders(res: import("express").Response) {
+  res.setHeader("X-Demo-Mode", "true");
+}
 
 const listQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -28,6 +38,13 @@ const listQuerySchema = z.object({
 router.get("/", optionalAuth, async (req, res, next) => {
   try {
     const query = listQuerySchema.parse(req.query);
+
+    if (isDemoMode()) {
+      demoHeaders(res);
+      const { data, pagination } = filterDemoProducts(query);
+      res.json({ success: true, data, pagination, demo: true });
+      return;
+    }
     const {
       page,
       limit,
@@ -135,6 +152,17 @@ router.get("/search/autocomplete", async (req, res, next) => {
       return;
     }
 
+    if (isDemoMode()) {
+      demoHeaders(res);
+      const suggestions = DEMO_PRODUCTS.filter((p) =>
+        p.name.toLowerCase().includes(q.toLowerCase())
+      )
+        .slice(0, 8)
+        .map((p) => ({ id: p.id, name: p.name, slug: p.slug }));
+      res.json({ success: true, suggestions });
+      return;
+    }
+
     const products = await prisma.product.findMany({
       where: {
         isActive: true,
@@ -152,9 +180,38 @@ router.get("/search/autocomplete", async (req, res, next) => {
 
 router.get("/:slug", optionalAuth, async (req, res, next) => {
   try {
+    const slug = param(req, "slug");
+
+    if (isDemoMode()) {
+      demoHeaders(res);
+      const product = findDemoProduct(slug);
+      if (!product) throw new AppError(404, "Product not found");
+      const related = DEMO_PRODUCTS.filter(
+        (p) => p.categoryId === product.categoryId && p.id !== product.id
+      ).slice(0, 8);
+      res.json({
+        success: true,
+        data: {
+          ...product,
+          reviews: [
+            {
+              id: "r1",
+              rating: 5,
+              title: "Excellent!",
+              comment: "Exactly as described. Fast shipping.",
+              user: { id: "u1", name: "Sarah M.", avatar: null },
+            },
+          ],
+        },
+        related,
+        demo: true,
+      });
+      return;
+    }
+
     const product = await prisma.product.findFirst({
       where: {
-        OR: [{ slug: param(req, "slug") }, { id: param(req, "slug") }],
+        OR: [{ slug }, { id: slug }],
         isActive: true,
       },
       include: {

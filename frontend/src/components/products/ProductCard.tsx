@@ -3,16 +3,12 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import type { Product } from "@/types";
 import { formatPrice } from "@/lib/utils";
-import { isDemoProduct } from "@/lib/homeContent";
-
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const href = isDemoProduct(product)
-    ? `/products?category=${product.category?.slug || "electronics"}`
-    : `/products/${product.slug}`;
+  const href = `/products/${product.slug}`;
   const image = product.images?.[0]?.url;
   const hasDiscount =
     product.comparePrice &&

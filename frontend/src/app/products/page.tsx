@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { api } from "@/lib/api";
+import { DEMO_PRODUCTS } from "@/lib/homeContent";
 import type { Product, Pagination } from "@/types";
 
 interface SearchParams {
@@ -31,15 +32,20 @@ export default async function ProductsPage({
 
   let products: Product[] = [];
   let pagination: Pagination | null = null;
+  let isDemo = false;
 
   try {
-    const res = await api<{ data: Product[]; pagination: Pagination }>(
-      `/api/products?${query.toString()}`
-    );
+    const res = await api<{
+      data: Product[];
+      pagination: Pagination;
+      demo?: boolean;
+    }>(`/api/products?${query.toString()}`);
     products = res.data;
     pagination = res.pagination;
+    isDemo = !!res.demo;
   } catch {
-    products = [];
+    products = DEMO_PRODUCTS;
+    isDemo = true;
   }
 
   return (
@@ -47,6 +53,13 @@ export default async function ProductsPage({
       <h1 className="text-2xl font-bold">
         {params.search ? `Results for "${params.search}"` : "All Products"}
       </h1>
+
+      {isDemo && (
+        <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
+          Preview mode — connect Supabase in <code className="rounded bg-amber-100 px-1">backend/.env</code> and run{" "}
+          <code className="rounded bg-amber-100 px-1">bash scripts/setup.sh</code> for login and checkout.
+        </p>
+      )}
 
       <div className="mt-8 flex flex-col gap-8 lg:flex-row">
         <aside className="lg:w-64 shrink-0">
