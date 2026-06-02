@@ -6,6 +6,7 @@
     "install-node": "bash scripts/install-node.sh",
     "setup:deps": "bash scripts/setup-deps.sh",
     "setup": "bash scripts/setup.sh",
+    "configure:supabase": "bash scripts/configure-supabase.sh",
     "dev:backend": "bash scripts/npm.sh run dev --prefix backend",
     "dev:frontend": "bash scripts/npm.sh run dev --prefix frontend",
     "db:push": "bash scripts/npm.sh run db:push --prefix backend",

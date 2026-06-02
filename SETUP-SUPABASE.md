@@ -1,43 +1,81 @@
-# Connect Supabase (5 minutes)
+# Connect Supabase
 
-Your shop preview works locally, but **login, cart, and real products** need a database.
+## Option A — Interactive setup (recommended)
 
-## Steps
-
-1. Go to [supabase.com/dashboard](https://supabase.com/dashboard) → **New project**
-2. Wait for the project to finish provisioning
-3. Open **Project Settings → Database** (or **Connect → ORMs → Prisma**)
-4. Copy both URLs into `backend/.env`:
-
-```env
-DATABASE_URL="postgresql://postgres.[YOUR-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true"
-DIRECT_URL="postgresql://postgres.[YOUR-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres"
-JWT_SECRET=paste-a-long-random-string-here
-```
-
-5. Run setup (no global npm needed):
+Run in Terminal (no global `npm` required):
 
 ```bash
 cd "/Users/mac/Documents/NEW WEBSITE"
-export PATH=".tools/node/bin:$PATH"
+bash scripts/configure-supabase.sh
+```
+
+You will be asked for:
+
+| Prompt | Where to find it |
+|--------|------------------|
+| **Project ref** | Supabase URL: `https://[ref].supabase.co` |
+| **Database password** | Password you set when creating the project |
+| **Region** | In the connection string, e.g. `us-east-1` |
+
+Then run:
+
+```bash
 bash scripts/setup.sh
 ```
 
-6. Restart the API if it was running:
+## Option B — Copy template manually
 
-```bash
-bash scripts/npm.sh run dev --prefix backend
+1. Open **`backend/env.supabase.example`** — copy `DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET` into **`backend/.env`**
+2. Open **`frontend/env.supabase.example`** — copy into **`frontend/.env.local`**
+3. Get exact URLs from: **Supabase → Project Settings → Database → Connect → Prisma**
+
+### Connection strings
+
+| Variable | Port | Notes |
+|----------|------|--------|
+| `DATABASE_URL` | **6543** | Add `?pgbouncer=true` at the end |
+| `DIRECT_URL` | **5432** | For `prisma db push` and seed |
+
+### Example `backend/.env`
+
+```env
+DATABASE_URL="postgresql://postgres.abcdefgh:YOUR_PASSWORD@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.abcdefgh:YOUR_PASSWORD@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
+JWT_SECRET=use-a-long-random-string-here
 ```
 
-## Demo accounts (after seed)
+### Example `frontend/.env.local`
 
-| Role | Email | Password |
-|------|-------|----------|
-| Customer | customer@demo.com | Password123! |
-| Seller | seller@demo.com | Password123! |
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
 
-## Password tips
+Optional (Project Settings → API):
 
-- If your DB password has `@`, `#`, or `%`, [URL-encode](https://www.urlencoder.org/) it in the connection string
-- Use port **6543** + `?pgbouncer=true` only on `DATABASE_URL`
-- Use port **5432** on `DIRECT_URL`
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://abcdefgh.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
+```
+
+## After setup
+
+```bash
+bash scripts/setup.sh          # tables + demo data
+bash scripts/npm.sh run dev --prefix backend
+bash scripts/npm.sh run dev --prefix frontend
+```
+
+**Demo login:** `customer@demo.com` / `Password123!`
+
+## Files (never commit secrets)
+
+| File | Purpose |
+|------|---------|
+| `backend/.env` | Database + JWT (gitignored) |
+| `frontend/.env.local` | Public API URL (gitignored) |
+| `backend/env.supabase.example` | Template only |
+| `frontend/env.supabase.example` | Template only |
+
+## Password special characters
+
+If your DB password contains `@`, `#`, `%`, etc., URL-encode it in the connection string, or use `bash scripts/configure-supabase.sh` (encodes automatically).
