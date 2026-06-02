@@ -1,6 +1,30 @@
 # Connect Supabase
 
-## Option A — Interactive setup (recommended)
+## Option A — Paste env vars (easiest)
+
+1. Open **`backend/supabase.paste.env`** and paste from Supabase → **Connect → Prisma**:
+   ```env
+   DATABASE_URL=postgresql://...   # Transaction pooler (6543)
+   DIRECT_URL=postgresql://...     # Direct (5432)
+   ```
+
+2. Open **`frontend/supabase.paste.env`** and paste from **Settings → API**:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://tfqchbjkykeuvlvqleor.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
+   ```
+
+3. Apply:
+   ```bash
+   bash scripts/apply-supabase-paste.sh
+   bash scripts/setup.sh
+   ```
+
+Paste files are **gitignored** — secrets stay on your machine.
+
+---
+
+## Option B — Interactive setup
 
 Run in Terminal (no global `npm` required):
 

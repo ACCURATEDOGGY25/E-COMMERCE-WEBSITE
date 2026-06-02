@@ -5,6 +5,7 @@ node_modules
 .env.*.local
 backend/.env
 frontend/.env.local
+**/supabase.paste.env
 # Keep templates committable
 !.env.example
 !**/env.supabase.example
