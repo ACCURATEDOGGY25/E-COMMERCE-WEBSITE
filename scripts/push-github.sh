@@ -6,15 +6,25 @@ cd "$ROOT"
 GH="$ROOT/.tools/gh"
 
 if [ ! -x "$GH" ]; then
-  echo "GitHub CLI not found. Run from project root after setup."
+  echo "Error: GitHub CLI missing at .tools/gh"
   exit 1
 fi
 
 if ! "$GH" auth status >/dev/null 2>&1; then
-  echo "==> Sign in to GitHub (browser will open)"
-  "$GH" auth login -h github.com -p https -w
+  echo "==> GitHub sign-in required (one time)"
+  echo "    A browser window will open. Approve access for ACCURATEDOGGY25."
+  echo ""
+  "$GH" auth login -h github.com -p https -w &
+  AUTH_PID=$!
+  sleep 3
+  open "https://github.com/login/device" 2>/dev/null || true
+  wait "$AUTH_PID" || {
+    echo "Error: GitHub login failed or timed out."
+    exit 1
+  }
 fi
 
+echo "==> Logged in as: $("$GH" api user -q .login 2>/dev/null || echo "unknown")"
 echo "==> Pushing to origin main..."
 git push -u origin main
 
