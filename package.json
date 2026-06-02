@@ -1,0 +1,16 @@
+{
+  "name": "markethub",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-node": "bash scripts/install-node.sh",
+    "setup:deps": "bash scripts/setup-deps.sh",
+    "setup": "bash scripts/setup.sh",
+    "dev:backend": "bash scripts/npm.sh run dev --prefix backend",
+    "dev:frontend": "bash scripts/npm.sh run dev --prefix frontend",
+    "db:push": "bash scripts/npm.sh run db:push --prefix backend",
+    "db:seed": "bash scripts/npm.sh run db:seed --prefix backend",
+    "db:studio": "bash scripts/npm.sh run db:studio --prefix backend",
+    "db:local": "docker compose up -d"
+  }
+}

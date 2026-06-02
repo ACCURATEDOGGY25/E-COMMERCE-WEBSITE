@@ -1,0 +1,23 @@
+# Optional local PostgreSQL (skip Supabase for development)
+# Usage:
+#   docker compose up -d
+#   Set in backend/.env:
+#     DATABASE_URL="postgresql://markethub:markethub@localhost:5432/markethub"
+#     DIRECT_URL="postgresql://markethub:markethub@localhost:5432/markethub"
+#   npm run setup
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: markethub
+      POSTGRES_PASSWORD: markethub
+      POSTGRES_DB: markethub
+    volumes:
+      - markethub_pg:/var/lib/postgresql/data
+
+volumes:
+  markethub_pg:
