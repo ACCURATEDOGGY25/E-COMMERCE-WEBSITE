@@ -28,6 +28,8 @@
 5. Deploy → copy your API URL, e.g. `https://markethub-api.onrender.com`
 6. Test: `https://YOUR-API.onrender.com/health` → `{"status":"ok"}`
 
+> **If you see “Service Suspended”** on `markethub-api.onrender.com`: open [Render Dashboard](https://dashboard.render.com) → resume the service or create a **new** Web Service from the same repo (`render.yaml`). Free-tier services suspend after inactivity.
+
 > Tables already exist in Supabase from local `setup` — no need to seed again unless you use a new DB.
 
 ---
@@ -106,3 +108,12 @@ bash scripts/npm.sh run dev --prefix frontend  # :3000
 ```
 
 See **DEPLOY.md** for troubleshooting.
+
+### Verify from Terminal
+
+```bash
+bash scripts/verify-production.sh
+# Or with your URLs:
+bash scripts/verify-production.sh https://YOUR.vercel.app https://YOUR-API.onrender.com
+```
+I 

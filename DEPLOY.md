@@ -74,5 +74,7 @@ npm run db:seed
 |-------|-----|
 | Vercel: empty repo | Ensure branch `main` has code (push with `bash push.sh`) |
 | Vercel: build fails | Root Directory must be `frontend` |
+| Vercel: 404 on preview URL | Redeploy latest `main`; confirm deploy status is **Ready** |
+| Render: Service Suspended | Resume in Render dashboard or redeploy; check billing/free tier |
 | API CORS errors | Set `FRONTEND_URL` on backend to exact Vercel URL |
 | No products | Run `npm run setup` with real Supabase `.env` |
