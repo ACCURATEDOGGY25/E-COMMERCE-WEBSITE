@@ -2,7 +2,10 @@
 # Fix missing CSS/images — use stable production build (dev + tunnel breaks static assets)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/daemon.sh
+source "$ROOT/scripts/lib/daemon.sh"
 export PATH="$ROOT/.tools/node/bin:$PATH"
+mkdir -p "$ROOT/.deploy-logs"
 WEB_PORT="${WEB_PORT:-3000}"
 API_PORT="${API_PORT:-4000}"
 
@@ -17,15 +20,16 @@ cd "$ROOT/frontend"
 rm -rf .next
 npm run build
 
+API_URL="http://127.0.0.1:$API_PORT"
 echo "==> Starting API :$API_PORT..."
-cd "$ROOT"
-bash scripts/npm.sh run dev --prefix backend >"$ROOT/.deploy-logs/backend.log" 2>&1 &
+: >"$ROOT/.deploy-logs/backend.log"
+start_daemon "$ROOT/.deploy-logs/backend.log" bash "$ROOT/scripts/npm.sh" run dev --prefix "$ROOT/backend"
 sleep 3
 
-API_URL="http://127.0.0.1:$API_PORT"
 echo "==> Starting store (production) :$WEB_PORT..."
-cd "$ROOT/frontend"
-PORT="$WEB_PORT" NEXT_PUBLIC_API_URL="$API_URL" npm run start >"$ROOT/.deploy-logs/frontend.log" 2>&1 &
+: >"$ROOT/.deploy-logs/frontend.log"
+start_daemon "$ROOT/.deploy-logs/frontend.log" bash -c \
+  "cd '$ROOT/frontend' && PORT='$WEB_PORT' NEXT_PUBLIC_API_URL='$API_URL' npm run start"
 sleep 4
 
 CSS_OK=$(curl -sL "http://127.0.0.1:$WEB_PORT" | grep -oE '/_next/static/css/[a-f0-9]+\.css' | head -1)

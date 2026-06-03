@@ -4,6 +4,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/daemon.sh
+source "$ROOT/scripts/lib/daemon.sh"
 export PATH="$ROOT/.tools/node/bin:$PATH"
 CF="$ROOT/.tools/cloudflared"
 LOG_DIR="$ROOT/.deploy-logs"
@@ -60,8 +62,8 @@ read_tunnel_url() {
 
 start_tunnel() {
   local port="$1" log="$2"
-  "$CF" tunnel --url "http://127.0.0.1:$port" >"$log" 2>&1 &
-  echo $!
+  : >"$log"
+  start_daemon "$log" "$CF" tunnel --url "http://127.0.0.1:$port"
 }
 
 echo "=== MarketHub automatic deploy (tunnels) ==="
@@ -72,7 +74,8 @@ stop_old
 if ! curl -sf "http://127.0.0.1:$API_PORT/health" >/dev/null 2>&1; then
   echo "==> Starting API on :$API_PORT..."
   cd "$ROOT"
-  bash scripts/npm.sh run dev --prefix backend >"$LOG_DIR/backend.log" 2>&1 &
+  : >"$LOG_DIR/backend.log"
+  start_daemon "$LOG_DIR/backend.log" bash "$ROOT/scripts/npm.sh" run dev --prefix "$ROOT/backend"
   sleep 2
 fi
 wait_for_port "$API_PORT" "API"
@@ -88,7 +91,8 @@ export FRONTEND_URL="http://127.0.0.1:$WEB_PORT"
 pkill -f "tsx watch src/index" 2>/dev/null || true
 sleep 1
 cd "$ROOT"
-FRONTEND_URL="$FRONTEND_URL" bash scripts/npm.sh run dev --prefix backend >"$LOG_DIR/backend.log" 2>&1 &
+: >"$LOG_DIR/backend.log"
+start_daemon "$LOG_DIR/backend.log" env FRONTEND_URL="$FRONTEND_URL" bash "$ROOT/scripts/npm.sh" run dev --prefix "$ROOT/backend"
 wait_for_port "$API_PORT" "API"
 
 # Frontend (production build — dev mode breaks CSS/images behind tunnels)
@@ -100,7 +104,9 @@ cd "$ROOT/frontend"
 rm -rf .next
 NEXT_PUBLIC_API_URL="$API_PUBLIC" npm run build >"$LOG_DIR/frontend-build.log" 2>&1
 echo "==> Starting store on :$WEB_PORT (next start)..."
-PORT="$WEB_PORT" NEXT_PUBLIC_API_URL="$API_PUBLIC" IMAGES_UNOPTIMIZED=1 npm run start >"$LOG_DIR/frontend.log" 2>&1 &
+: >"$LOG_DIR/frontend.log"
+start_daemon "$LOG_DIR/frontend.log" bash -c \
+  "cd '$ROOT/frontend' && PORT='$WEB_PORT' NEXT_PUBLIC_API_URL='$API_PUBLIC' IMAGES_UNOPTIMIZED=1 npm run start"
 wait_for_port "$WEB_PORT" "store"
 
 echo "==> Starting store tunnel..."
@@ -113,7 +119,8 @@ echo "    Store: $WEB_PUBLIC"
 pkill -f "tsx watch src/index" 2>/dev/null || true
 sleep 1
 cd "$ROOT"
-FRONTEND_URL="$WEB_PUBLIC" bash scripts/npm.sh run dev --prefix backend >"$LOG_DIR/backend.log" 2>&1 &
+: >"$LOG_DIR/backend.log"
+start_daemon "$LOG_DIR/backend.log" env FRONTEND_URL="$WEB_PUBLIC" bash "$ROOT/scripts/npm.sh" run dev --prefix "$ROOT/backend"
 sleep 4
 
 cat >"$URLS_FILE" <<EOF
@@ -134,7 +141,7 @@ echo "  Login: customer@demo.com / Password123!"
 echo "============================================"
 echo ""
 echo "Saved to PUBLIC_URLS.txt"
-echo "Keep this terminal open (tunnels stop if you close it)."
+echo "Servers run in background (nohup). To stop: pkill -f 'next start|tsx watch|cloudflared tunnel'"
 echo "Logs: $LOG_DIR/"
 
 open "$WEB_PUBLIC" 2>/dev/null || true
