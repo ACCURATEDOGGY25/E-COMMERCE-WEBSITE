@@ -13,8 +13,8 @@ echo "  Store :3000 HTTP $code"
 if [ -f "$ROOT/PUBLIC_URLS.txt" ]; then
   echo ""
   echo "Public tunnels (from PUBLIC_URLS.txt):"
-  # shellcheck disable=SC1090
-  source <(grep -E '^[A-Z_]+=' "$ROOT/PUBLIC_URLS.txt" | sed 's/^/export /')
+  STORE_URL="$(grep '^STORE_URL=' "$ROOT/PUBLIC_URLS.txt" | cut -d= -f2-)"
+  API_URL="$(grep '^API_URL=' "$ROOT/PUBLIC_URLS.txt" | cut -d= -f2-)"
   if [ -n "${STORE_URL:-}" ]; then
     sc=$(curl -s -o /dev/null -w "%{http_code}" -L "$STORE_URL" --max-time 12 2>/dev/null || echo "000")
     echo "  Store: $STORE_URL  HTTP $sc"
