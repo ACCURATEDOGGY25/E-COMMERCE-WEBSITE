@@ -97,6 +97,29 @@ Success = browser tab title **MarketHub** and categories on the homepage.
 
 ---
 
+## One-command deploy (after API keys)
+
+```bash
+bash scripts/setup-deploy-keys.sh   # paste Render + Vercel tokens once
+bash scripts/deploy-all.sh          # resume API, deploy store, verify
+```
+
+---
+
+## Cursor / Mac prompts
+
+When the agent runs deploy or login commands, Cursor may ask for **network**, **git**, or **full disk** access — click **Allow** or **Always allow**.
+
+| Action | What may pop up |
+|--------|------------------|
+| `bash push.sh` | Browser → GitHub device login |
+| `bash scripts/vercel-login.sh` | Browser → Vercel login |
+| `bash scripts/open-deploy-dashboards.sh` | Browser → Vercel + Render tabs |
+
+**Stuck terminal?** If `bash push.sh` hangs on “Pushing…”, press **Ctrl+C** — GitHub is already logged in; run `git push origin main` or ignore (repo is up to date).
+
+---
+
 ## Local commands
 
 ```bash
