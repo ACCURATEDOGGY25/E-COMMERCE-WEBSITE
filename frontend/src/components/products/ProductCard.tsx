@@ -22,6 +22,7 @@ export function ProductCard({ product }: ProductCardProps) {
             src={image}
             alt={product.name}
             fill
+            unoptimized
             className="object-cover transition group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, 25vw"
           />
