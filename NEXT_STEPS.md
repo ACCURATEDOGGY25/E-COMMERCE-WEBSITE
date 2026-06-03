@@ -38,6 +38,12 @@
 
 ## Step 2 — Deploy frontend (Vercel) ~10 min
 
+```bash
+bash scripts/deploy-vercel.sh
+```
+
+Or manually:
+
 1. [vercel.com/new](https://vercel.com/new) → import **E-COMMERCE-WEBSITE**
 2. Settings (repo includes root `vercel.json` with `"rootDirectory": "frontend"`):
 
