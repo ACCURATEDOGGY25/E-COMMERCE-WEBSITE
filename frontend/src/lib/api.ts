@@ -51,3 +51,26 @@ export async function api<T>(
 
   return data as T;
 }
+
+export async function uploadImage(
+  file: File,
+  token: string
+): Promise<{ url: string; publicId: string }> {
+  const base = getApiUrl();
+  if (!base) throw new ApiError(503, "API URL not configured");
+
+  const form = new FormData();
+  form.append("file", file);
+
+  const res = await fetch(`${base}/api/uploads/image`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new ApiError(res.status, data.message || "Upload failed");
+  }
+  return data.data as { url: string; publicId: string };
+}

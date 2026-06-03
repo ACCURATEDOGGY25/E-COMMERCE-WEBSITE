@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, MapPin, Truck } from "lucide-react";
 import { ProductActions } from "@/components/products/ProductActions";
+import { ProductReviews, type ProductReview } from "@/components/products/ProductReviews";
 import { ProductCard } from "@/components/products/ProductCard";
 import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
@@ -147,37 +148,11 @@ export default async function ProductDetailPage({
         </div>
       </div>
 
-      {/* Reviews */}
-      {p.reviews?.length > 0 && (
-        <section className="mt-16">
-          <h2 className="text-xl font-bold">Customer Reviews</h2>
-          <div className="mt-6 space-y-4">
-            {p.reviews.map((review) => (
-              <div key={review.id} className="card p-4">
-                <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < review.rating
-                            ? "fill-amber-400 text-amber-400"
-                            : "text-gray-300"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="font-medium">{review.user.name}</span>
-                </div>
-                {review.title && <p className="mt-2 font-medium">{review.title}</p>}
-                {review.comment && (
-                  <p className="mt-1 text-gray-600">{review.comment}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <ProductReviews
+        productId={p.id}
+        productSlug={p.slug}
+        initialReviews={(p.reviews || []) as ProductReview[]}
+      />
 
       {/* Related */}
       {related.length > 0 && (

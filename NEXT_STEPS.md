@@ -89,13 +89,23 @@ Success = browser tab title **MarketHub** and categories on the homepage.
 
 ---
 
-## Optional later (v2)
+## Features (v2) — done
 
-- Stripe live keys for real payments
-- Supabase anon key + Auth UI
+See **FEATURES.md** — Stripe checkout UI, reviews, Cloudinary upload, profile, notifications.
+
+## Permanent Render (24/7 API)
+
+```bash
+bash scripts/deploy-render-permanent.sh
+```
+
+Or with API key: `bash scripts/setup-deploy-keys.sh` then `bash scripts/deploy-all.sh`
+
+## Optional later
+
+- Supabase Auth UI (anon key)
 - Custom domain on Vercel
-- Cloudinary for image uploads
-- Reset DB password (you shared it in chat earlier)
+- Reset DB password if shared earlier
 
 ---
 

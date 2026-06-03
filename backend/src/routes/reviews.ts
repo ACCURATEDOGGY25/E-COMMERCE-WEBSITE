@@ -14,6 +14,27 @@ const reviewSchema = z.object({
   comment: z.string().optional(),
 });
 
+router.get("/", async (req, res, next) => {
+  try {
+    const productId = req.query.productId as string | undefined;
+    if (!productId) {
+      throw new AppError(400, "productId query required");
+    }
+
+    const reviews = await prisma.review.findMany({
+      where: { productId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: { select: { id: true, name: true, avatar: true } },
+      },
+    });
+
+    res.json({ success: true, data: reviews });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post("/", authenticate, validateBody(reviewSchema), async (req: AuthRequest, res, next) => {
   try {
     const { productId, rating, title, comment } = req.body;

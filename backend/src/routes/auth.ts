@@ -147,6 +147,70 @@ router.post("/login", validateBody(loginSchema), async (req, res, next) => {
   }
 });
 
+const updateProfileSchema = z.object({
+  name: z.string().min(2).optional(),
+  currentPassword: z.string().min(1).optional(),
+  newPassword: z.string().min(8).optional(),
+});
+
+router.patch(
+  "/me",
+  authenticate,
+  validateBody(updateProfileSchema),
+  async (req: AuthRequest, res, next) => {
+    try {
+      if (isDemoMode()) {
+        throw new AppError(503, DEMO_AUTH_MSG, "DEMO_MODE");
+      }
+
+      const { name, currentPassword, newPassword } = req.body;
+      const user = await prisma.user.findUnique({
+        where: { id: req.user!.userId },
+      });
+
+      if (!user) throw new AppError(404, "User not found");
+
+      const data: { name?: string; passwordHash?: string } = {};
+
+      if (name) data.name = name;
+
+      if (newPassword) {
+        if (!user.passwordHash || !currentPassword) {
+          throw new AppError(400, "Current password required");
+        }
+        const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+        if (!valid) throw new AppError(401, "Current password is incorrect");
+        data.passwordHash = await bcrypt.hash(newPassword, 12);
+      }
+
+      const updated = await prisma.user.update({
+        where: { id: user.id },
+        data,
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          avatar: true,
+          vendor: {
+            select: {
+              id: true,
+              storeName: true,
+              slug: true,
+              status: true,
+              logo: true,
+            },
+          },
+        },
+      });
+
+      res.json({ success: true, user: updated });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 router.get("/me", authenticate, async (req: AuthRequest, res, next) => {
   try {
     const user = await prisma.user.findUnique({

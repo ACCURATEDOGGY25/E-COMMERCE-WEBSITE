@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth";
 import { api, ApiError } from "@/lib/api";
+import { ImageUploadField } from "@/components/seller/ImageUploadField";
 import type { Category, Product } from "@/types";
 
 export default function EditProductPage() {
@@ -186,15 +187,10 @@ export default function EditProductPage() {
             />
           </div>
         </div>
-        <div>
-          <label className="text-sm font-medium">Image URL</label>
-          <input
-            type="url"
-            className="input mt-1"
-            value={form.imageUrl}
-            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-          />
-        </div>
+        <ImageUploadField
+          value={form.imageUrl}
+          onChange={(imageUrl) => setForm({ ...form, imageUrl })}
+        />
         <div>
           <label className="text-sm font-medium">Location</label>
           <input

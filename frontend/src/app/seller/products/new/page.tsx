@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth";
 import { api, ApiError } from "@/lib/api";
+import { ImageUploadField } from "@/components/seller/ImageUploadField";
 import type { Category } from "@/types";
 
 export default function NewProductPage() {
@@ -163,19 +164,10 @@ export default function NewProductPage() {
             />
           </div>
         </div>
-        <div>
-          <label className="text-sm font-medium">Image URL</label>
-          <input
-            type="url"
-            className="input mt-1"
-            placeholder="https://images.unsplash.com/..."
-            value={form.imageUrl}
-            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            Use an image URL (Cloudinary integration ready for v2)
-          </p>
-        </div>
+        <ImageUploadField
+          value={form.imageUrl}
+          onChange={(imageUrl) => setForm({ ...form, imageUrl })}
+        />
         <div>
           <label className="text-sm font-medium">Location</label>
           <input

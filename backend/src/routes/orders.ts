@@ -199,7 +199,11 @@ router.post("/:id/confirm-payment", async (req: AuthRequest, res, next) => {
 
     if (!order) throw new AppError(404, "Order not found");
 
-    if (!stripe && process.env.NODE_ENV !== "production") {
+    const mockPayment =
+      !stripe ||
+      (process.env.STRIPE_SECRET_KEY?.includes("...") ?? false);
+
+    if (mockPayment) {
       await prisma.$transaction([
         prisma.order.update({
           where: { id: order.id },

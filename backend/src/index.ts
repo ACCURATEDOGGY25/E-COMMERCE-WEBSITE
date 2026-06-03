@@ -14,6 +14,8 @@ import sellerRoutes from "./routes/seller.js";
 import wishlistRoutes from "./routes/wishlist.js";
 import reviewRoutes from "./routes/reviews.js";
 import vendorRoutes from "./routes/vendors.js";
+import uploadRoutes from "./routes/uploads.js";
+import notificationRoutes from "./routes/notifications.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { prisma } from "./lib/prisma.js";
 import { isDemoMode } from "./lib/demoMode.js";
@@ -86,6 +88,8 @@ app.use("/api/seller", sellerRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/vendors", vendorRoutes);
+app.use("/api/uploads", uploadRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use(errorHandler);
 

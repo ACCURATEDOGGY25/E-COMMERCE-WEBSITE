@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
-  Search,
   ShoppingCart,
   Heart,
+  Bell,
   User,
   Menu,
   X,
@@ -15,17 +15,22 @@ import {
 import { useAuthStore } from "@/store/auth";
 import { useCartStore } from "@/store/cart";
 import { SearchBar } from "@/components/search/SearchBar";
+import { api } from "@/lib/api";
 
 export function Header() {
   const { user, token, logout, fetchUser } = useAuthStore();
   const { cart, fetchCart } = useCartStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
     if (token) {
       fetchUser();
       fetchCart();
+      api<{ unreadCount: number }>("/api/notifications", { token })
+        .then((res) => setUnreadNotifications(res.unreadCount))
+        .catch(() => {});
     }
   }, [token, fetchUser, fetchCart]);
 
@@ -66,6 +71,16 @@ export function Header() {
           <div className="flex items-center gap-2">
             {token ? (
               <>
+                <Link
+                  href="/account"
+                  className="relative rounded-lg p-2 text-gray-600 hover:bg-gray-100"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-5 w-5" />
+                  {unreadNotifications > 0 && (
+                    <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-red-500" />
+                  )}
+                </Link>
                 <Link
                   href="/wishlist"
                   className="rounded-lg p-2 text-gray-600 hover:bg-gray-100"

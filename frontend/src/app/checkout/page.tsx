@@ -2,11 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import { useAuthStore } from "@/store/auth";
 import { useCartStore } from "@/store/cart";
 import { api, ApiError } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
+import { StripeCheckoutForm } from "@/components/checkout/StripeCheckoutForm";
 import type { Order } from "@/types";
+
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -14,6 +21,10 @@ export default function CheckoutPage() {
   const { cart, subtotal, fetchCart } = useCartStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [paymentStep, setPaymentStep] = useState<{
+    orderId: string;
+    clientSecret: string;
+  } | null>(null);
   const [form, setForm] = useState({
     shippingStreet: "",
     shippingCity: "",
@@ -51,11 +62,21 @@ export default function CheckoutPage() {
         body: JSON.stringify(form),
       });
 
-      if (res.payment.mockMode) {
+      if (res.payment.mockMode || !res.payment.clientSecret) {
         await api(`/api/orders/${res.data.id}/confirm-payment`, {
           method: "POST",
           token,
         });
+        router.push(`/orders/${res.data.id}?success=1`);
+        return;
+      }
+
+      if (stripePromise && res.payment.clientSecret) {
+        setPaymentStep({
+          orderId: res.data.id,
+          clientSecret: res.payment.clientSecret,
+        });
+        return;
       }
 
       router.push(`/orders/${res.data.id}?success=1`);
@@ -67,6 +88,29 @@ export default function CheckoutPage() {
   }
 
   if (!token) return null;
+
+  if (paymentStep && stripePromise) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
+        <h1 className="text-2xl font-bold">Complete payment</h1>
+        <p className="mt-2 text-gray-600">Total: {formatPrice(total)}</p>
+        <div className="mt-8">
+          <Elements
+            stripe={stripePromise}
+            options={{ clientSecret: paymentStep.clientSecret }}
+          >
+            <StripeCheckoutForm
+              orderId={paymentStep.orderId}
+              token={token}
+              onSuccess={() =>
+                router.push(`/orders/${paymentStep.orderId}?success=1`)
+              }
+            />
+          </Elements>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
@@ -146,9 +190,9 @@ export default function CheckoutPage() {
             <h2 className="font-semibold">Order Total</h2>
             <p className="mt-2 text-2xl font-bold">{formatPrice(total)}</p>
             <p className="mt-1 text-sm text-gray-500">
-              {process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-                ? "You will complete payment with Stripe."
-                : "Mock payment mode — order will be confirmed automatically."}
+              {stripePromise
+                ? "Stripe payment after you place the order."
+                : "Mock payment — order confirmed automatically."}
             </p>
           </div>
 
