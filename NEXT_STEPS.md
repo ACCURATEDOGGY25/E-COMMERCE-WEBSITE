@@ -97,6 +97,16 @@ Success = browser tab title **MarketHub** and categories on the homepage.
 
 ---
 
+## Fully automatic (no Render/Vercel clicks)
+
+```bash
+bash scripts/deploy-automatic.sh
+```
+
+Opens a **public shop URL** via Cloudflare tunnel (uses your local API + Supabase). Keep the terminal open while you share the link.
+
+---
+
 ## One-command deploy (after API keys)
 
 ```bash
