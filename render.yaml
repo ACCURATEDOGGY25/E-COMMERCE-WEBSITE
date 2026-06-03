@@ -20,3 +20,4 @@ services:
         generateValue: true
       - key: FRONTEND_URL
         sync: false
+      # Use same DATABASE_URL / DIRECT_URL as local backend/.env (aws-1-eu-north-1 for this project)

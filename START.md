@@ -5,9 +5,8 @@
 - [x] Backend dependencies installed
 - [x] Frontend dependencies installed
 - [x] Code pushed to GitHub
-- [ ] **You:** Replace placeholders in `backend/.env` — see **SETUP-SUPABASE.md**
-- [ ] Run `bash scripts/setup.sh` (creates tables + demo data)
-- [ ] Deploy frontend (Vercel) + backend (Render) — see **DEPLOY.md**
+- [x] Supabase connected + seeded — see **SETUP-SUPABASE.md**
+- [ ] **Next:** Deploy backend (Render) → frontend (Vercel) — see **NEXT_STEPS.md**
 
 ## Option A — Supabase (recommended)
 
