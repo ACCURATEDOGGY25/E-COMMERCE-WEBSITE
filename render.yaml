@@ -17,7 +17,7 @@ services:
       - key: DIRECT_URL
         sync: false
       - key: JWT_SECRET
-        generateValue: true
+        sync: false
       - key: FRONTEND_URL
         sync: false
       # Use same DATABASE_URL / DIRECT_URL as local backend/.env (aws-1-eu-north-1 for this project)

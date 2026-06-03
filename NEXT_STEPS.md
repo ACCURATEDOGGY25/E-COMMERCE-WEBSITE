@@ -51,8 +51,19 @@
 
 4. Deploy → confirm URL in Vercel **Domains** (must show **MarketHub** in browser tab, not 404)
 
-Your preview may look like: `https://e-commerce-website-two-phi-62.vercel.app`  
-If you get **404**, redeploy latest `main` and confirm Root Directory = `frontend`.
+Your preview may look like: `https://e-commerce-website-two-phi-62.vercel.app`
+
+### Vercel URL check (June 2026)
+
+| URL | Status | Notes |
+|-----|--------|--------|
+| `e-commerce-website-two-phi-62.vercel.app` | **404** | Redeploy needed — latest `main` includes root `vercel.json` |
+| `e-commerce-website.vercel.app` | **500** | Likely wrong Root Directory — set to `frontend` and redeploy |
+| `e-commerce-website-two-phi.vercel.app` | **Wrong app** | “Nest ONDC”, not MarketHub |
+
+**Fix:** Vercel → project **E-COMMERCE-WEBSITE** → **Deployments** → **Redeploy** latest `main` (commit `ef71ae6+`).  
+Settings → **Root Directory** = `frontend`, **Production Branch** = `main`.  
+Success = browser tab title **MarketHub** and categories on the homepage.
 
 ---
 

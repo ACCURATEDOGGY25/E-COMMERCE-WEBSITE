@@ -1,7 +1,8 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
 export function getApiUrl(): string {
-  return API_URL.replace(/\/$/, "");
+  const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (configured) return configured.replace(/\/$/, "");
+  if (process.env.VERCEL) return "";
+  return "http://localhost:4000";
 }
 
 export class ApiError extends Error {
@@ -24,7 +25,12 @@ export async function api<T>(
 ): Promise<T> {
   const { token, headers, ...rest } = options;
 
-  const res = await fetch(`${getApiUrl()}${endpoint}`, {
+  const base = getApiUrl();
+  if (!base) {
+    throw new ApiError(503, "API URL not configured");
+  }
+
+  const res = await fetch(`${base}${endpoint}`, {
     ...rest,
     headers: {
       "Content-Type": "application/json",
