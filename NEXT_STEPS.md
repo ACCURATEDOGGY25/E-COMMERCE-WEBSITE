@@ -7,6 +7,8 @@
 - [x] Database seeded (demo users & products)
 - [x] Code on GitHub: [E-COMMERCE-WEBSITE](https://github.com/ACCURATEDOGGY25/E-COMMERCE-WEBSITE)
 - [x] Local dev: API `:4000`, store `:3000`
+- [x] **Automatic public URL** — `bash scripts/deploy-automatic.sh` (see `PUBLIC_URLS.txt`)
+- [ ] **24/7 cloud** — Render + Vercel (optional; API still suspended on Render)
 
 ---
 
@@ -130,14 +132,16 @@ When the agent runs deploy or login commands, Cursor may ask for **network**, **
 
 ---
 
-## Local commands
+## Quick commands
 
 ```bash
 cd "/Users/mac/Documents/NEW WEBSITE"
 export PATH=".tools/node/bin:$PATH"
 
-bash scripts/npm.sh run dev --prefix backend   # :4000
-bash scripts/npm.sh run dev --prefix frontend  # :3000
+bash scripts/status.sh              # check local + public + cloud
+bash scripts/deploy-automatic.sh    # public shop URL (no dashboard)
+bash scripts/npm.sh run dev --prefix backend   # :4000 only
+bash scripts/npm.sh run dev --prefix frontend  # :3000 only
 ```
 
 See **DEPLOY.md** for troubleshooting.

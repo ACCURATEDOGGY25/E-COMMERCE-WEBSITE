@@ -6,7 +6,8 @@
 - [x] Frontend dependencies installed
 - [x] Code pushed to GitHub
 - [x] Supabase connected + seeded — see **SETUP-SUPABASE.md**
-- [ ] **Next:** Deploy backend (Render) → frontend (Vercel) — see **NEXT_STEPS.md**
+- [x] **Public shop (automatic):** `bash scripts/deploy-automatic.sh` → see `PUBLIC_URLS.txt`
+- [ ] **Optional 24/7:** Render + Vercel — **NEXT_STEPS.md**
 
 ## Option A — Supabase (recommended)
 
