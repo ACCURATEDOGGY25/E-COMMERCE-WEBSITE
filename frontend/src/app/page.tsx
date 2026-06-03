@@ -13,6 +13,8 @@ import {
 } from "@/lib/homeContent";
 import type { Product, Category } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 async function getHomeData() {
   try {
     const [featured, newest, categories, vendors] = await Promise.all([

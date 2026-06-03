@@ -1,5 +1,9 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+export function getApiUrl(): string {
+  return API_URL.replace(/\/$/, "");
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -20,7 +24,7 @@ export async function api<T>(
 ): Promise<T> {
   const { token, headers, ...rest } = options;
 
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  const res = await fetch(`${getApiUrl()}${endpoint}`, {
     ...rest,
     headers: {
       "Content-Type": "application/json",

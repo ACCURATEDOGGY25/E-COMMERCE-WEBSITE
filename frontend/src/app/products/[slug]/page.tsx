@@ -7,6 +7,8 @@ import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 import type { Product } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProductDetailPage({
   params,
 }: {

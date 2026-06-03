@@ -35,11 +35,11 @@
 ## Step 2 — Deploy frontend (Vercel) ~10 min
 
 1. [vercel.com/new](https://vercel.com/new) → import **E-COMMERCE-WEBSITE**
-2. Settings:
+2. Settings (repo includes root `vercel.json` with `"rootDirectory": "frontend"`):
 
 | Setting | Value |
 |---------|--------|
-| Root Directory | `frontend` |
+| Root Directory | `frontend` (or leave default if using root `vercel.json`) |
 | Framework | Next.js |
 | Branch | `main` |
 
@@ -47,16 +47,19 @@
 
 | Name | Value |
 |------|--------|
-| `NEXT_PUBLIC_API_URL` | Your Render URL from step 1 |
+| `NEXT_PUBLIC_API_URL` | Your Render URL from step 1 (or `http://localhost:4000` for testing only) |
 
-4. Deploy → copy your site URL, e.g. `https://e-commerce-website.vercel.app`
+4. Deploy → confirm URL in Vercel **Domains** (must show **MarketHub** in browser tab, not 404)
+
+Your preview may look like: `https://e-commerce-website-two-phi-62.vercel.app`  
+If you get **404**, redeploy latest `main` and confirm Root Directory = `frontend`.
 
 ---
 
 ## Step 3 — Connect frontend ↔ backend
 
 1. In **Render** → your API service → **Environment**
-2. Set `FRONTEND_URL` to your **exact** Vercel URL (no trailing slash)
+2. Set `FRONTEND_URL` to your **exact** Vercel URL (no trailing slash), e.g. `https://e-commerce-website-two-phi-62.vercel.app`
 3. Save → Render redeploys
 4. In **Vercel** → redeploy if you changed env vars
 

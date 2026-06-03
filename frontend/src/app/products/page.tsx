@@ -5,6 +5,8 @@ import { api } from "@/lib/api";
 import { DEMO_PRODUCTS } from "@/lib/homeContent";
 import type { Product, Pagination } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 interface SearchParams {
   search?: string;
   category?: string;
