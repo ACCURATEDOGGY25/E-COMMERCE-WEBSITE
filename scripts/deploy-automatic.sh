@@ -91,12 +91,16 @@ cd "$ROOT"
 FRONTEND_URL="$FRONTEND_URL" bash scripts/npm.sh run dev --prefix backend >"$LOG_DIR/backend.log" 2>&1 &
 wait_for_port "$API_PORT" "API"
 
-# Frontend
+# Frontend (production build — dev mode breaks CSS/images behind tunnels)
 pkill -f "next dev" 2>/dev/null || true
+pkill -f "next start" 2>/dev/null || true
 sleep 1
-echo "==> Starting store on :$WEB_PORT..."
+echo "==> Building store for production..."
 cd "$ROOT/frontend"
-NEXT_PUBLIC_API_URL="$API_PUBLIC" npm run dev >"$LOG_DIR/frontend.log" 2>&1 &
+rm -rf .next
+NEXT_PUBLIC_API_URL="$API_PUBLIC" npm run build >"$LOG_DIR/frontend-build.log" 2>&1
+echo "==> Starting store on :$WEB_PORT (next start)..."
+PORT="$WEB_PORT" NEXT_PUBLIC_API_URL="$API_PUBLIC" IMAGES_UNOPTIMIZED=1 npm run start >"$LOG_DIR/frontend.log" 2>&1 &
 wait_for_port "$WEB_PORT" "store"
 
 echo "==> Starting store tunnel..."
