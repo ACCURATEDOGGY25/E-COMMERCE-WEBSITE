@@ -15,22 +15,14 @@ fi
 echo "=== Permanent Render deploy (markethub-api) ==="
 
 if [ -z "${RENDER_API_KEY:-}" ]; then
-  echo "No RENDER_API_KEY — opening Render dashboard."
-  echo ""
-  echo "Manual steps (one time):"
-  echo "  1. New → Blueprint → repo E-COMMERCE-WEBSITE"
-  echo "  2. Service name: markethub-api (or resume existing)"
-  echo "  3. Paste env from clipboard:"
-  bash "$ROOT/scripts/finish-production.sh" 2>/dev/null | head -1 || true
-  if command -v pbcopy >/dev/null && [ -f "$ROOT/backend/.env" ]; then
-    {
-      echo "NODE_ENV=production"
-      grep -E '^(DATABASE_URL|DIRECT_URL|JWT_SECRET)=' "$ROOT/backend/.env" | sed 's/^"//;s/"$//'
-      echo "FRONTEND_URL=https://your-vercel-url.vercel.app"
-    } | pbcopy
-    echo "  (env vars copied to clipboard)"
-  fi
+  echo "No RENDER_API_KEY — use Render dashboard (env copied to clipboard)."
+  bash "$ROOT/scripts/render-env-paste.sh"
   open "https://dashboard.render.com/blueprints" 2>/dev/null || true
+  echo ""
+  echo "  1. Blueprint → E-COMMERCE-WEBSITE (or Resume markethub-api)"
+  echo "  2. Paste environment variables → Save"
+  echo "  3. Manual Deploy → test /health"
+  echo "  4. Vercel: NEXT_PUBLIC_API_URL=https://markethub-api.onrender.com"
   exit 0
 fi
 

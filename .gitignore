@@ -7,6 +7,7 @@ backend/.env
 frontend/.env.local
 **/supabase.paste.env
 deploy.secrets.env
+backend/render.paste.env
 .deploy-logs/
 PUBLIC_URLS.txt
 # Keep templates committable

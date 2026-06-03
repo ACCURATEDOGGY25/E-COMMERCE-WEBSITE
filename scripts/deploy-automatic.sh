@@ -33,8 +33,8 @@ stop_old() {
 }
 
 wait_for_port() {
-  local port="$1" name="$2" n=0
-  while ! curl -s -o /dev/null "http://127.0.0.1:$port" 2>/dev/null; do
+  local port="$1" name="$2" path="${3:-/}" n=0
+  while ! curl -sf -o /dev/null "http://127.0.0.1:$port$path" 2>/dev/null; do
     n=$((n + 1))
     if [ "$n" -gt 60 ]; then
       echo "Error: $name did not start on port $port"
@@ -71,14 +71,16 @@ echo "=== MarketHub automatic deploy (tunnels) ==="
 stop_old
 
 # Backend
-if ! curl -sf "http://127.0.0.1:$API_PORT/health" >/dev/null 2>&1; then
+api_up() { curl -sf "http://127.0.0.1:$API_PORT/health" >/dev/null 2>&1; }
+
+if ! api_up; then
   echo "==> Starting API on :$API_PORT..."
   cd "$ROOT"
   : >"$LOG_DIR/backend.log"
   start_daemon "$LOG_DIR/backend.log" bash "$ROOT/scripts/npm.sh" run dev --prefix "$ROOT/backend"
   sleep 2
 fi
-wait_for_port "$API_PORT" "API"
+wait_for_port "$API_PORT" "API" "/health"
 
 echo "==> Starting API tunnel..."
 start_tunnel "$API_PORT" "$LOG_DIR/tunnel-api.log" >/dev/null
@@ -93,7 +95,7 @@ sleep 1
 cd "$ROOT"
 : >"$LOG_DIR/backend.log"
 start_daemon "$LOG_DIR/backend.log" env FRONTEND_URL="$FRONTEND_URL" bash "$ROOT/scripts/npm.sh" run dev --prefix "$ROOT/backend"
-wait_for_port "$API_PORT" "API"
+wait_for_port "$API_PORT" "API" "/health"
 
 # Frontend (production build — dev mode breaks CSS/images behind tunnels)
 pkill -f "next dev" 2>/dev/null || true

@@ -112,10 +112,12 @@ Or with API key: `bash scripts/setup-deploy-keys.sh` then `bash scripts/deploy-a
 ## Fully automatic (no Render/Vercel clicks)
 
 ```bash
-bash scripts/deploy-automatic.sh
+bash scripts/start-all.sh
 ```
 
-Opens a **public shop URL** via Cloudflare tunnel (uses your local API + Supabase). Keep the terminal open while you share the link.
+Starts local shop + **public URL** (Cloudflare tunnel). **Keep that terminal open.**
+
+Or two steps: `bash scripts/run-markethub.sh` then `bash scripts/deploy-automatic.sh`
 
 ---
 
