@@ -4,5 +4,8 @@
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
-  "rootDirectory": "frontend"
+  "rootDirectory": "frontend",
+  "env": {
+    "API_URL": "https://organisms-lightning-economies-salvador.trycloudflare.com"
+  }
 }

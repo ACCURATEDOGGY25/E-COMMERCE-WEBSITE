@@ -13,7 +13,7 @@ fi
 {
   echo "NODE_ENV=production"
   grep -E '^(DATABASE_URL|DIRECT_URL|JWT_SECRET)=' "$ENV" | sed 's/^"//;s/"$//'
-  echo "FRONTEND_URL=https://YOUR-VERCEL-URL.vercel.app"
+  echo "FRONTEND_URL=https://esite2026.vercel.app"
 } >"$OUT"
 
 if command -v pbcopy >/dev/null; then
