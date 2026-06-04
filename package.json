@@ -18,6 +18,7 @@
     "db:local": "docker compose up -d",
     "push:github": "bash scripts/push-github.sh",
     "deploy": "bash scripts/deploy-push.sh",
-    "persist:catalog": "bash scripts/persist-catalog.sh"
+    "persist:catalog": "bash scripts/persist-catalog.sh",
+    "background": "bash scripts/run-background.sh"
   }
 }
