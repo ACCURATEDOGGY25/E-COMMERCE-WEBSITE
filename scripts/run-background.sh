@@ -32,8 +32,13 @@ pkill -f "keep-api-online.sh" 2>/dev/null || true
 sleep 1
 
 echo "==> Starting keep-api-online in background..."
-start_daemon "$KEEP_LOG" bash "$ROOT/scripts/keep-api-online.sh"
+if command -v setsid >/dev/null 2>&1; then
+  setsid nohup bash "$ROOT/scripts/keep-api-online.sh" >>"$KEEP_LOG" 2>&1 </dev/null &
+else
+  nohup bash "$ROOT/scripts/keep-api-online.sh" >>"$KEEP_LOG" 2>&1 </dev/null &
+fi
 echo $! >"$PID"
+disown -h $! 2>/dev/null || true
 echo "PID $(cat "$PID") — log: $KEEP_LOG"
 
 for _ in $(seq 1 90); do

@@ -78,8 +78,28 @@ echo "Press Ctrl+C to stop API + tunnel."
 while true; do
   sleep 120
   if ! curl -sf "http://127.0.0.1:$API_PORT/health" >/dev/null; then
-    echo "[$(date)] WARN: local API down"
+    echo "[$(date)] WARN: local API down — restarting backend..."
+    pkill -f "tsx watch src/index" 2>/dev/null || true
+    sleep 1
+    start_daemon "$LOG/backend.log" bash "$ROOT/scripts/npm.sh" run dev --prefix "$ROOT/backend"
+    for _ in $(seq 1 30); do
+      curl -sf "http://127.0.0.1:$API_PORT/health" >/dev/null && break
+      sleep 1
+    done
   elif ! curl -sf "$API_PUBLIC/health" >/dev/null 2>&1; then
-    echo "[$(date)] WARN: tunnel unreachable — restart this script"
+    echo "[$(date)] WARN: tunnel unreachable — restarting cloudflared..."
+    pkill -f "cloudflared tunnel --url http://127.0.0.1:$API_PORT" 2>/dev/null || true
+    sleep 1
+    : >"$LOG/tunnel-api.log"
+    start_daemon "$LOG/tunnel-api.log" "$ROOT/.tools/cloudflared" tunnel --url "http://127.0.0.1:$API_PORT"
+    for _ in $(seq 1 40); do
+      API_PUBLIC=$(grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' "$LOG/tunnel-api.log" 2>/dev/null | tail -1 || true)
+      [ -n "$API_PUBLIC" ] && curl -sf "$API_PUBLIC/health" >/dev/null 2>&1 && break
+      sleep 1
+    done
+    if [ -n "${API_PUBLIC:-}" ]; then
+      bash "$ROOT/scripts/sync-api-url.sh" "$API_PUBLIC" --force 2>/dev/null || true
+      echo "[$(date)] New tunnel: $API_PUBLIC"
+    fi
   fi
 done
