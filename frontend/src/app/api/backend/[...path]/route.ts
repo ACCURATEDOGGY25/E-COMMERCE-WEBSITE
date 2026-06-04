@@ -3,11 +3,19 @@ import { getUpstreamApiUrl } from "@/lib/backendUrl";
 
 export const runtime = "nodejs";
 
+function upstreamPath(pathSegments: string[]): string {
+  const path = pathSegments.join("/");
+  // Backend mounts /health at root, not under /api
+  if (path === "health" || path.startsWith("health/")) {
+    return `/${path}`;
+  }
+  return `/api/${path}`;
+}
+
 async function proxy(req: NextRequest, pathSegments: string[]) {
   const upstream = getUpstreamApiUrl();
-  const path = pathSegments.join("/");
   const search = req.nextUrl.search;
-  const target = `${upstream}/api/${path}${search}`;
+  const target = `${upstream}${upstreamPath(pathSegments)}${search}`;
 
   const headers = new Headers();
   const auth = req.headers.get("authorization");
