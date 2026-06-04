@@ -30,7 +30,7 @@ export default async function ProductsPage({
   Object.entries(params).forEach(([k, v]) => {
     if (v) query.set(k, v);
   });
-  if (!query.has("limit")) query.set("limit", "20");
+  if (!query.has("limit")) query.set("limit", "24");
 
   let products: Product[] = [];
   let pagination: Pagination | null = null;

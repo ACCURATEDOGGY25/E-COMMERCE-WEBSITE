@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
+import { BULK_PRODUCTS, type BulkProductSeed } from "../src/lib/catalog-bulk.js";
 
 const IMG = {
   audio: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
@@ -543,6 +544,11 @@ export const EXTRA_PRODUCTS: ProductSeed[] = [
   },
 ];
 
+const ALL_EXTRA_PRODUCTS: ProductSeed[] = [
+  ...EXTRA_PRODUCTS,
+  ...(BULK_PRODUCTS as ProductSeed[]),
+];
+
 export async function seedExtendedCategories(prisma: PrismaClient) {
   const upsertChild = async (
     slug: string,
@@ -633,40 +639,57 @@ export async function seedExtendedCategories(prisma: PrismaClient) {
   await upsertChild("makeup", "Makeup", "beauty", IMG.lipstick2.replace("w=800", "w=400"));
 }
 
+async function upsertCatalogProduct(
+  prisma: PrismaClient,
+  p: ProductSeed | BulkProductSeed,
+  vendors: Record<"tech" | "fashion" | "gaming" | "home", string>
+) {
+  const category = await prisma.category.findUniqueOrThrow({
+    where: { slug: p.categorySlug },
+  });
+  await prisma.product.upsert({
+    where: { slug: p.slug },
+    update: {
+      price: p.price,
+      stock: p.stock,
+      isFeatured: p.isFeatured ?? false,
+      comparePrice: p.comparePrice ?? null,
+    },
+    create: {
+      name: p.name,
+      slug: p.slug,
+      description: p.description,
+      price: p.price,
+      comparePrice: p.comparePrice,
+      brand: p.brand,
+      stock: p.stock,
+      categoryId: category.id,
+      vendorId: vendors[p.vendorKey],
+      isFeatured: p.isFeatured ?? false,
+      rating: p.rating ?? 4.0,
+      reviewCount: p.reviewCount ?? 0,
+      location: p.location ?? "USA",
+      images: {
+        create: [{ url: p.image, sortOrder: 0 }],
+      },
+    },
+  });
+}
+
 export async function seedExtraProducts(
   prisma: PrismaClient,
   vendors: Record<"tech" | "fashion" | "gaming" | "home", string>
 ) {
-  for (const p of EXTRA_PRODUCTS) {
-    const category = await prisma.category.findUniqueOrThrow({
-      where: { slug: p.categorySlug },
-    });
-    await prisma.product.upsert({
-      where: { slug: p.slug },
-      update: {
-        price: p.price,
-        stock: p.stock,
-        isFeatured: p.isFeatured ?? false,
-        comparePrice: p.comparePrice ?? null,
-      },
-      create: {
-        name: p.name,
-        slug: p.slug,
-        description: p.description,
-        price: p.price,
-        comparePrice: p.comparePrice,
-        brand: p.brand,
-        stock: p.stock,
-        categoryId: category.id,
-        vendorId: vendors[p.vendorKey],
-        isFeatured: p.isFeatured ?? false,
-        rating: p.rating ?? 4.0,
-        reviewCount: p.reviewCount ?? 0,
-        location: p.location ?? "USA",
-        images: {
-          create: [{ url: p.image, sortOrder: 0 }],
-        },
-      },
-    });
+  const total = ALL_EXTRA_PRODUCTS.length;
+  const batchSize = 8;
+  console.log(`Seeding ${total} catalog products...`);
+
+  for (let i = 0; i < total; i += batchSize) {
+    const batch = ALL_EXTRA_PRODUCTS.slice(i, i + batchSize);
+    for (const p of batch) {
+      await upsertCatalogProduct(prisma, p, vendors);
+    }
+    console.log(`  ${Math.min(i + batchSize, total)}/${total} products`);
+    await new Promise((r) => setTimeout(r, 150));
   }
 }

@@ -23,7 +23,14 @@ else
   echo "No file changes — pushing existing commits."
 fi
 
-bash "$ROOT/scripts/push-github.sh"
+if ! bash "$ROOT/scripts/push-github.sh"; then
+  echo ""
+  echo "If push failed on .github/workflows — grant workflow scope:"
+  echo "  .tools/gh auth refresh -h github.com -s workflow"
+  echo "  Or: https://github.com/login/device (approve workflow access)"
+  echo "  Then run: bash scripts/deploy-push.sh"
+  exit 1
+fi
 
 echo ""
 echo "============================================"

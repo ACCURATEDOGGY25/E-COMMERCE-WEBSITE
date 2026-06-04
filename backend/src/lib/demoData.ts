@@ -1,6 +1,7 @@
 /** Demo catalog when database is not configured (local preview). */
 
 import { demoCategoryMatches } from "./demoCategoryGroups.js";
+import { BULK_PRODUCTS } from "./catalog-bulk.js";
 
 const IMG = [
   "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
@@ -261,6 +262,63 @@ export const DEMO_PRODUCTS = [
     images: [{ id: "i12", url: IMG[1], alt: null, sortOrder: 0 }],
     createdAt: new Date().toISOString(),
   },
+  ...BULK_PRODUCTS.map((p, i) => ({
+    id: `demo-bulk-${i}`,
+    name: p.name,
+    slug: p.slug,
+    description: p.description,
+    price: p.price,
+    comparePrice: p.comparePrice ?? null,
+    brand: p.brand,
+    stock: p.stock,
+    rating: p.rating ?? 4.2,
+    reviewCount: p.reviewCount ?? 50,
+    isFeatured: p.isFeatured ?? false,
+    isActive: true,
+    location: p.location ?? "USA",
+    categoryId: `c-${p.categorySlug}`,
+    category: {
+      id: `c-${p.categorySlug}`,
+      name: p.categorySlug,
+      slug: p.categorySlug,
+    },
+    vendorId:
+      p.vendorKey === "gaming"
+        ? "v3"
+        : p.vendorKey === "fashion"
+          ? "v2"
+          : p.vendorKey === "home"
+            ? "v4"
+            : "v1",
+    vendor: {
+      id:
+        p.vendorKey === "gaming"
+          ? "v3"
+          : p.vendorKey === "fashion"
+            ? "v2"
+            : p.vendorKey === "home"
+              ? "v4"
+              : "v1",
+      storeName:
+        p.vendorKey === "gaming"
+          ? "GameZone Store"
+          : p.vendorKey === "fashion"
+            ? "Style Avenue"
+            : p.vendorKey === "home"
+              ? "Home Comfort Co."
+              : "TechHub Electronics",
+      slug:
+        p.vendorKey === "gaming"
+          ? "gamezone"
+          : p.vendorKey === "fashion"
+            ? "style-avenue"
+            : p.vendorKey === "home"
+              ? "home-comfort"
+              : "techhub-electronics",
+    },
+    images: [{ id: `bi-${i}`, url: p.image, alt: null, sortOrder: 0 }],
+    createdAt: new Date().toISOString(),
+  })),
 ];
 
 export const DEMO_VENDORS = [
