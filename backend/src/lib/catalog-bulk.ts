@@ -21,7 +21,7 @@ export type BulkProductSeed = {
 
 type Item = { name: string; slug: string; price: number; compare?: number };
 
-function batch(
+export function batch(
   categorySlug: string,
   vendorKey: BulkProductSeed["vendorKey"],
   brand: string,
@@ -144,6 +144,7 @@ export const BULK_PRODUCTS: BulkProductSeed[] = [
     { name: "Sustainable Organic Cotton Set", slug: "sustainable-cotton-set", price: 74.99 },
   ]),
   ...batch("phones", "tech", "TechHub", E, [
+    { name: "5G Smartphone Unlocked 128GB", slug: "5g-smartphone-unlocked-128gb", price: 599.99, compare: 699.99 },
     { name: "Tempered Glass Screen Protector 2-Pack", slug: "tempered-glass-protector-2pack", price: 14.99 },
     { name: "MagSafe Wireless Charger Stand", slug: "magsafe-wireless-charger-stand", price: 39.99 },
     { name: "Phone Gimbal Stabilizer", slug: "phone-gimbal-stabilizer", price: 79.99 },
@@ -174,7 +175,12 @@ export const BULK_PRODUCTS: BulkProductSeed[] = [
     { name: "Smart Home Hub", slug: "smart-home-hub", price: 99.99 },
     { name: "4K Streaming Device", slug: "4k-streaming-device", price: 49.99 },
     { name: "Robot Vacuum Basic", slug: "robot-vacuum-basic", price: 199.99, compare: 249.99 },
-  ]),
+    { name: "NAS Home Storage 4-Bay", slug: "nas-home-storage-4bay", price: 399.99 },
+    { name: "Network Attached Printer Wi-Fi", slug: "network-printer-wifi", price: 179.99 },
+    { name: "Graphics Drawing Tablet", slug: "graphics-drawing-tablet", price: 89.99 },
+    { name: "USB Microscope Digital", slug: "usb-microscope-digital", price: 45.99 },
+    { name: "Electric Scooter Commuter", slug: "electric-scooter-commuter", price: 599.99, compare: 699.99 },
+  ], 2),
   ...batch("home-furniture", "home", "Home Comfort Co.", H, [
     { name: "Solid Wood Dining Table", slug: "solid-wood-dining-table", price: 599.99 },
     { name: "5-Tier Bookshelf", slug: "5-tier-bookshelf", price: 129.99 },
@@ -251,6 +257,28 @@ export const BULK_PRODUCTS: BulkProductSeed[] = [
     { name: "Graphic Novel Collection Vol.1", slug: "graphic-novel-collection-vol1", price: 19.99 },
     { name: "Business Leader Biography", slug: "business-leader-biography", price: 18.99 },
     { name: "True Crime Bestseller", slug: "true-crime-bestseller", price: 15.99 },
+  ]),
+  ...batch("men", "fashion", "Style Avenue", F, [
+    { name: "Water-Resistant Windbreaker", slug: "mens-water-resistant-windbreaker", price: 64.99 },
+    { name: "Merino Wool Base Layer", slug: "mens-merino-wool-base-layer", price: 54.99 },
+    { name: "Cargo Jogger Pants", slug: "mens-cargo-jogger-pants", price: 44.99 },
+  ]),
+  ...batch("women", "fashion", "Style Avenue", F, [
+    { name: "Wrap Maxi Dress", slug: "womens-wrap-maxi-dress", price: 59.99 },
+    { name: "Faux Leather Moto Jacket", slug: "womens-faux-leather-moto-jacket", price: 89.99, compare: 119.99 },
+    { name: "Ballet Flats Leather", slug: "womens-ballet-flats-leather", price: 49.99 },
+  ]),
+  ...batch("sports", "fashion", "RunFast", S, [
+    { name: "Adjustable Dumbbells Pair", slug: "adjustable-dumbbells-pair", price: 299.99 },
+    { name: "Pickleball Paddle Set", slug: "pickleball-paddle-set", price: 59.99 },
+    { name: "Golf Rangefinder Slope", slug: "golf-rangefinder-slope", price: 189.99 },
+    { name: "Swim Goggles Anti-Fog 2-Pack", slug: "swim-goggles-antifog-2pack", price: 18.99 },
+    { name: "Cycling Helmet MIPS", slug: "cycling-helmet-mips", price: 79.99 },
+  ]),
+  ...batch("books", "home", "PageTurner", "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800", [
+    { name: "Python Programming Handbook", slug: "python-programming-handbook", price: 34.99 },
+    { name: "World Atlas Hardcover", slug: "world-atlas-hardcover", price: 42.99 },
+    { name: "Poetry Collection Modern Voices", slug: "poetry-collection-modern-voices", price: 17.99 },
   ]),
   ...batch("toys", "home", "PlayCraft", "https://images.unsplash.com/photo-1558060370-aba9b14b4237?w=800", [
     { name: "Superhero Action Figure Set", slug: "superhero-action-figure-set", price: 29.99 },

@@ -1,4 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
+import { APPLIANCE_GADGET_PRODUCTS } from "../src/lib/catalog-appliances-gadgets.js";
+import { BULK_PRODUCTS } from "../src/lib/catalog-bulk.js";
 
 const IMG = {
   audio: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
@@ -775,40 +777,66 @@ export async function seedExtendedCategories(prisma: PrismaClient) {
   await upsertChild("makeup", "Makeup", "beauty", IMG.lipstick2.replace("w=800", "w=400"));
 }
 
+type ProductSeedLike = (typeof EXTRA_PRODUCTS)[number];
+
+async function upsertProductSeed(
+  prisma: PrismaClient,
+  vendors: Record<"tech" | "fashion" | "gaming" | "home", string>,
+  p: ProductSeedLike
+) {
+  const category = await prisma.category.findUniqueOrThrow({
+    where: { slug: p.categorySlug },
+  });
+  await prisma.product.upsert({
+    where: { slug: p.slug },
+    update: {
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      stock: p.stock,
+      brand: p.brand,
+      isFeatured: p.isFeatured ?? false,
+      comparePrice: p.comparePrice ?? null,
+      categoryId: category.id,
+      vendorId: vendors[p.vendorKey],
+      isActive: true,
+    },
+    create: {
+      name: p.name,
+      slug: p.slug,
+      description: p.description,
+      price: p.price,
+      comparePrice: p.comparePrice,
+      brand: p.brand,
+      stock: p.stock,
+      categoryId: category.id,
+      vendorId: vendors[p.vendorKey],
+      isFeatured: p.isFeatured ?? false,
+      rating: p.rating ?? 4.0,
+      reviewCount: p.reviewCount ?? 0,
+      location: p.location ?? "USA",
+      images: {
+        create: [{ url: p.image, sortOrder: 0 }],
+      },
+    },
+  });
+}
+
 export async function seedExtraProducts(
   prisma: PrismaClient,
   vendors: Record<"tech" | "fashion" | "gaming" | "home", string>
 ) {
-  for (const p of EXTRA_PRODUCTS) {
-    const category = await prisma.category.findUniqueOrThrow({
-      where: { slug: p.categorySlug },
-    });
-    await prisma.product.upsert({
-      where: { slug: p.slug },
-      update: {
-        price: p.price,
-        stock: p.stock,
-        isFeatured: p.isFeatured ?? false,
-        comparePrice: p.comparePrice ?? null,
-      },
-      create: {
-        name: p.name,
-        slug: p.slug,
-        description: p.description,
-        price: p.price,
-        comparePrice: p.comparePrice,
-        brand: p.brand,
-        stock: p.stock,
-        categoryId: category.id,
-        vendorId: vendors[p.vendorKey],
-        isFeatured: p.isFeatured ?? false,
-        rating: p.rating ?? 4.0,
-        reviewCount: p.reviewCount ?? 0,
-        location: p.location ?? "USA",
-        images: {
-          create: [{ url: p.image, sortOrder: 0 }],
-        },
-      },
-    });
+  const allProducts: ProductSeedLike[] = [
+    ...EXTRA_PRODUCTS,
+    ...BULK_PRODUCTS,
+    ...APPLIANCE_GADGET_PRODUCTS,
+  ];
+  console.log(`Seeding ${allProducts.length} catalog products...`);
+  for (let i = 0; i < allProducts.length; i++) {
+    const p = allProducts[i];
+    await upsertProductSeed(prisma, vendors, p);
+    if ((i + 1) % 25 === 0) {
+      console.log(`  ${i + 1}/${allProducts.length} products...`);
+    }
   }
 }
