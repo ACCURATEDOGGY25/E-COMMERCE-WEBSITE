@@ -17,14 +17,21 @@ Login: `customer@demo.com` / `Password123!`
 2. Don’t close Terminal if you ran `keep-api-online.sh` yourself — or use overnight script above
 3. Optional: plug in power
 
-## Tomorrow (permanent, no Mac needed)
+## Permanent API (no Mac needed)
 
 ```bash
-bash scripts/render-env-paste.sh
+bash scripts/render-env-paste.sh   # env copied to clipboard
 ```
 
-Render → Resume **markethub-api** → paste env → Deploy  
-Vercel → `API_URL` = `https://markethub-api.onrender.com` → Redeploy
+Render → Resume **markethub-api** → Environment → Paste → Deploy  
+When Render shows Live:
+
+```bash
+bash scripts/switch-to-render.sh
+git push origin main
+```
+
+Check anytime: `bash scripts/status.sh`
 
 ## If login stops working
 
