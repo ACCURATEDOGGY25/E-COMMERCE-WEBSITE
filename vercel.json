@@ -6,7 +6,7 @@
   "devCommand": "npm run dev",
   "rootDirectory": "frontend",
   "env": {
-    "API_URL": "https://argued-hamilton-mental-theme.trycloudflare.com",
-    "NEXT_PUBLIC_API_URL": "https://argued-hamilton-mental-theme.trycloudflare.com"
+    "API_URL": "https://brands-attempted-copied-yet.trycloudflare.com",
+    "NEXT_PUBLIC_API_URL": "https://brands-attempted-copied-yet.trycloudflare.com"
   }
 }
