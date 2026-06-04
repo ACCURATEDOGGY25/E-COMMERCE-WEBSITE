@@ -40,17 +40,8 @@ if [ -f "$ROOT/backend/.env" ]; then
   " "$ROOT/backend/.env" "$VERCEL_URL"
 fi
 
-# Point Vercel proxy at live API (git push triggers redeploy)
-node -e "
-  const fs = require('fs');
-  const p = process.argv[1];
-  const api = process.argv[2];
-  const j = JSON.parse(fs.readFileSync(p, 'utf8'));
-  j.env = j.env || {};
-  j.env.API_URL = api;
-  fs.writeFileSync(p, JSON.stringify(j, null, 2) + '\n');
-  console.log('  vercel.json: API_URL set');
-" "$ROOT/vercel.json" "$API_URL"
+echo "  Set API_URL in Vercel dashboard → Settings → Environment Variables"
+echo "  Value: $API_URL"
 
 # Restart local API if running
 if curl -sf "http://127.0.0.1:4000/health" >/dev/null 2>&1; then
@@ -74,7 +65,7 @@ if git diff --cached --quiet; then
   echo "  Nothing to commit"
 else
   git commit -m "Wire Vercel store to API via proxy for login and checkout."
-  "$GH" push origin main
+  git push origin main
   echo "  Pushed — Vercel will redeploy in ~2 min"
 fi
 

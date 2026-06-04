@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "build": "npm run build --prefix frontend",
+    "vercel-build": "npm run build --prefix frontend",
     "install-node": "bash scripts/install-node.sh",
     "setup:deps": "bash scripts/setup-deps.sh",
     "setup": "bash scripts/setup.sh",
