@@ -1,7 +1,24 @@
+import { getUpstreamApiUrl } from "./backendUrl";
+
 export function getApiUrl(): string {
   const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
   if (configured) return configured.replace(/\/$/, "");
-  if (process.env.VERCEL) return "";
+
+  if (typeof window === "undefined") {
+    if (process.env.VERCEL_URL) {
+      return `https://${process.env.VERCEL_URL}/api/backend`;
+    }
+    return getUpstreamApiUrl();
+  }
+
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1"
+  ) {
+    return "/api/backend";
+  }
+
   return "http://localhost:4000";
 }
 
