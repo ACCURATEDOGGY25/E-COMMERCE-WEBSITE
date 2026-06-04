@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export PATH="$ROOT/.tools/node/bin:$PATH"
 GH="$ROOT/.tools/gh"
-VERCEL_URL="${VERCEL_URL:-https://e-commerce-website-two-phi-62.vercel.app}"
+VERCEL_URL="${VERCEL_URL:-https://esite2026.vercel.app}"
 API_URL="${API_URL:-https://markethub-api.onrender.com}"
 
 cd "$ROOT"

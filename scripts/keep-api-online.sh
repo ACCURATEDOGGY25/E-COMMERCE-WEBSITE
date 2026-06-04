@@ -61,6 +61,8 @@ LOGIN=customer@demo.com / Password123!
 Updated=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 EOF
 
+bash "$ROOT/scripts/sync-api-url.sh" "$API_PUBLIC" --force 2>/dev/null || true
+
 echo ""
 echo "============================================"
 echo "  Store:  $VERCEL_URL"
@@ -68,9 +70,16 @@ echo "  API:    $API_PUBLIC"
 echo "  Login:  customer@demo.com / Password123!"
 echo "============================================"
 echo ""
-echo "If Vercel still shows Preview mode, set in Vercel dashboard:"
-echo "  API_URL = $API_PUBLIC"
-echo "Then Redeploy. Or wait for git push (vercel.json env)."
+echo "Vercel: set API_URL = $API_PUBLIC (or git push after sync-api-url.sh)"
+echo "Permanent: bash scripts/render-env-paste.sh → Resume on Render"
 echo ""
 echo "Press Ctrl+C to stop API + tunnel."
-wait
+
+while true; do
+  sleep 120
+  if ! curl -sf "http://127.0.0.1:$API_PORT/health" >/dev/null; then
+    echo "[$(date)] WARN: local API down"
+  elif ! curl -sf "$API_PUBLIC/health" >/dev/null 2>&1; then
+    echo "[$(date)] WARN: tunnel unreachable — restart this script"
+  fi
+done
