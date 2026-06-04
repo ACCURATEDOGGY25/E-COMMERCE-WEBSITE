@@ -5,10 +5,12 @@ export function getApiUrl(): string {
   if (configured) return configured.replace(/\/$/, "");
 
   if (typeof window === "undefined") {
+    const upstream = getUpstreamApiUrl();
+    if (upstream && !upstream.includes("onrender.com")) return upstream;
     if (process.env.VERCEL_URL) {
       return `https://${process.env.VERCEL_URL}/api/backend`;
     }
-    return getUpstreamApiUrl();
+    return upstream;
   }
 
   if (
@@ -16,6 +18,8 @@ export function getApiUrl(): string {
     window.location.hostname !== "localhost" &&
     window.location.hostname !== "127.0.0.1"
   ) {
+    const pub = process.env.NEXT_PUBLIC_API_URL?.trim();
+    if (pub && !pub.includes("onrender.com")) return pub.replace(/\/$/, "");
     return "/api/backend";
   }
 
