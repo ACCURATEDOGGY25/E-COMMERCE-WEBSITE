@@ -16,6 +16,7 @@
     "db:seed": "bash scripts/npm.sh run db:seed --prefix backend",
     "db:studio": "bash scripts/npm.sh run db:studio --prefix backend",
     "db:local": "docker compose up -d",
-    "push:github": "bash scripts/push-github.sh"
+    "push:github": "bash scripts/push-github.sh",
+    "deploy": "bash scripts/deploy-push.sh"
   }
 }

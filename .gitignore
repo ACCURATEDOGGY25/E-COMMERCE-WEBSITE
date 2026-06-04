@@ -5,6 +5,7 @@ node_modules
 .env.*.local
 backend/.env
 frontend/.env.local
+frontend/.env.production
 **/supabase.paste.env
 deploy.secrets.env
 backend/render.paste.env

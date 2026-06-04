@@ -26,7 +26,8 @@ fi
 
 echo "==> Logged in as: $("$GH" api user -q .login 2>/dev/null || echo "unknown")"
 echo "==> Pushing to origin main..."
-git push -u origin main
+git push origin main
 
 echo ""
 echo "Done! https://github.com/ACCURATEDOGGY25/E-COMMERCE-WEBSITE"
+echo "Vercel will auto-deploy: https://esite2026.vercel.app (~1–2 min)"
