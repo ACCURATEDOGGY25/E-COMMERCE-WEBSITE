@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { SHOP_CATEGORIES } from "@/lib/homeContent";
 
 export function ProductFilters() {
   const router = useRouter();
@@ -12,6 +13,15 @@ export function ProductFilters() {
   const [location, setLocation] = useState(searchParams.get("location") || "");
   const [minRating, setMinRating] = useState(searchParams.get("minRating") || "");
   const sort = searchParams.get("sort") || "newest";
+  const category = searchParams.get("category") || "";
+
+  function setCategory(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set("category", value);
+    else params.delete("category");
+    params.delete("page");
+    router.push(`/products?${params.toString()}`);
+  }
 
   function applyFilters() {
     const params = new URLSearchParams(searchParams.toString());
@@ -38,6 +48,22 @@ export function ProductFilters() {
   return (
     <div className="card space-y-6 p-6">
       <h2 className="font-semibold">Filters</h2>
+
+      <div>
+        <label className="text-sm font-medium text-gray-700">Category</label>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="input mt-1"
+        >
+          <option value="">All categories</option>
+          {SHOP_CATEGORIES.map((cat) => (
+            <option key={cat.slug} value={cat.slug}>
+              {cat.icon} {cat.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div>
         <label className="text-sm font-medium text-gray-700">Sort by</label>

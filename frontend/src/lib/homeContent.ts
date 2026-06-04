@@ -1,4 +1,5 @@
 import type { Product, Category } from "@/types";
+import { categoryMatches } from "@/lib/categoryFilter";
 
 export interface ShopCategory {
   slug: string;
@@ -339,6 +340,262 @@ export const DEMO_PRODUCTS: Product[] = [
     category: { id: "c3", name: "Fashion", slug: "men" },
     vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
   },
+  {
+    id: "demo-15",
+    name: "DualSense Wireless Controller",
+    slug: "demo-dualsense",
+    description: "",
+    price: 69.99,
+    brand: "GameZone",
+    stock: 85,
+    rating: 4.7,
+    reviewCount: 421,
+    images: [{ id: "15", url: "https://images.unsplash.com/photo-1598301298708-575eee5c0858?w=800", sortOrder: 0 }],
+    category: { id: "c4", name: "Gaming", slug: "gaming-accessories" },
+    vendor: { id: "v3", storeName: "GameZone Store", slug: "gamezone" },
+  },
+  {
+    id: "demo-16",
+    name: "Precision Gaming Mouse",
+    slug: "demo-gaming-mouse",
+    description: "",
+    price: 79.99,
+    brand: "GameZone",
+    stock: 95,
+    rating: 4.4,
+    reviewCount: 334,
+    images: [{ id: "16", url: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800", sortOrder: 0 }],
+    category: { id: "c4", name: "Gaming", slug: "gaming-accessories" },
+    vendor: { id: "v3", storeName: "GameZone Store", slug: "gamezone" },
+  },
+  {
+    id: "demo-17",
+    name: "Open World RPG — PC",
+    slug: "demo-rpg-game",
+    description: "",
+    price: 59.99,
+    brand: "GameZone",
+    stock: 500,
+    rating: 4.9,
+    reviewCount: 1204,
+    images: [{ id: "17", url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800", sortOrder: 0 }],
+    category: { id: "c4", name: "Gaming", slug: "video-games" },
+    vendor: { id: "v3", storeName: "GameZone Store", slug: "gamezone" },
+  },
+  {
+    id: "demo-18",
+    name: "27\" Gaming Monitor 165Hz",
+    slug: "demo-gaming-monitor",
+    description: "",
+    price: 329.99,
+    brand: "GameZone",
+    stock: 22,
+    rating: 4.6,
+    reviewCount: 78,
+    isFeatured: true,
+    images: [{ id: "18", url: "https://images.unsplash.com/photo-1527443224754-1219d9a6d2b7?w=800", sortOrder: 0 }],
+    category: { id: "c4", name: "Gaming", slug: "pc-gaming" },
+    vendor: { id: "v3", storeName: "GameZone Store", slug: "gamezone" },
+  },
+  {
+    id: "demo-19",
+    name: "Men's Slim Fit Chinos",
+    slug: "demo-chinos",
+    description: "",
+    price: 49.99,
+    brand: "Style Avenue",
+    stock: 90,
+    rating: 4.3,
+    reviewCount: 156,
+    images: [{ id: "19", url: "https://images.unsplash.com/photo-1473966962640-6e420c6f6b0b?w=800", sortOrder: 0 }],
+    category: { id: "c3", name: "Fashion", slug: "men" },
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+  },
+  {
+    id: "demo-20",
+    name: "Women's High Heels",
+    slug: "demo-heels",
+    description: "",
+    price: 89.99,
+    brand: "Style Avenue",
+    stock: 48,
+    rating: 4.2,
+    reviewCount: 91,
+    images: [{ id: "20", url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800", sortOrder: 0 }],
+    category: { id: "c3", name: "Fashion", slug: "fashion-shoes" },
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+  },
+  {
+    id: "demo-21",
+    name: "Premium Cotton Hoodie",
+    slug: "demo-hoodie",
+    description: "",
+    price: 44.99,
+    brand: "Style Avenue",
+    stock: 120,
+    rating: 4.7,
+    reviewCount: 312,
+    images: [{ id: "21", url: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800", sortOrder: 0 }],
+    category: { id: "c3", name: "Fashion", slug: "women" },
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+  },
+  {
+    id: "demo-22",
+    name: "Modern Sectional Sofa",
+    slug: "demo-sofa",
+    description: "",
+    price: 899.99,
+    brand: "Home Comfort Co.",
+    stock: 8,
+    rating: 4.6,
+    reviewCount: 34,
+    isFeatured: true,
+    images: [{ id: "22", url: "https://images.unsplash.com/photo-1555041469-a586c61e9bc7?w=800", sortOrder: 0 }],
+    category: { id: "c5", name: "Home", slug: "home-furniture" },
+    vendor: { id: "v4", storeName: "Home Comfort Co.", slug: "home-comfort" },
+  },
+  {
+    id: "demo-23",
+    name: "Smart LED Desk Lamp",
+    slug: "demo-desk-lamp",
+    description: "",
+    price: 39.99,
+    brand: "Home Comfort Co.",
+    stock: 85,
+    rating: 4.4,
+    reviewCount: 127,
+    images: [{ id: "23", url: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800", sortOrder: 0 }],
+    category: { id: "c5", name: "Home", slug: "home-kitchen" },
+    vendor: { id: "v4", storeName: "Home Comfort Co.", slug: "home-comfort" },
+  },
+  {
+    id: "demo-24",
+    name: "Non-Stick Cookware Set",
+    slug: "demo-cookware",
+    description: "",
+    price: 149.99,
+    brand: "Home Comfort Co.",
+    stock: 42,
+    rating: 4.5,
+    reviewCount: 89,
+    images: [{ id: "24", url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800", sortOrder: 0 }],
+    category: { id: "c5", name: "Home", slug: "home-kitchen" },
+    vendor: { id: "v4", storeName: "Home Comfort Co.", slug: "home-comfort" },
+  },
+  {
+    id: "demo-25",
+    name: "Extra Thick Yoga Mat",
+    slug: "demo-yoga-mat",
+    description: "",
+    price: 34.99,
+    brand: "RunFast",
+    stock: 140,
+    rating: 4.6,
+    reviewCount: 245,
+    images: [{ id: "25", url: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=800", sortOrder: 0 }],
+    category: { id: "c6", name: "Sports", slug: "fitness" },
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+  },
+  {
+    id: "demo-26",
+    name: "4-Person Camping Tent",
+    slug: "demo-tent",
+    description: "",
+    price: 189.99,
+    brand: "RunFast",
+    stock: 30,
+    rating: 4.5,
+    reviewCount: 67,
+    images: [{ id: "26", url: "https://images.unsplash.com/photo-1478131143081-80f7f84b404e?w=800", sortOrder: 0 }],
+    category: { id: "c6", name: "Sports", slug: "outdoor" },
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+  },
+  {
+    id: "demo-27",
+    name: "Vitamin C Serum",
+    slug: "demo-serum",
+    description: "",
+    price: 28.99,
+    brand: "GlowLab",
+    stock: 200,
+    rating: 4.8,
+    reviewCount: 412,
+    images: [{ id: "27", url: "https://images.unsplash.com/photo-1620916564558-827411649d0b?w=800", sortOrder: 0 }],
+    category: { id: "c7", name: "Beauty", slug: "skincare" },
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+  },
+  {
+    id: "demo-28",
+    name: "Matte Lipstick Trio",
+    slug: "demo-lipstick",
+    description: "",
+    price: 32.99,
+    brand: "GlowLab",
+    stock: 95,
+    rating: 4.5,
+    reviewCount: 189,
+    images: [{ id: "28", url: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800", sortOrder: 0 }],
+    category: { id: "c7", name: "Beauty", slug: "makeup" },
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+  },
+  {
+    id: "demo-29",
+    name: "Bestseller Fiction Bundle",
+    slug: "demo-books",
+    description: "",
+    price: 39.99,
+    brand: "PageTurner",
+    stock: 80,
+    rating: 4.7,
+    reviewCount: 56,
+    images: [{ id: "29", url: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800", sortOrder: 0 }],
+    category: { id: "c8", name: "Books", slug: "books" },
+    vendor: { id: "v4", storeName: "Home Comfort Co.", slug: "home-comfort" },
+  },
+  {
+    id: "demo-30",
+    name: "STEM Building Blocks 500pc",
+    slug: "demo-toys",
+    description: "",
+    price: 44.99,
+    brand: "PlayCraft",
+    stock: 65,
+    rating: 4.8,
+    reviewCount: 203,
+    images: [{ id: "30", url: "https://images.unsplash.com/photo-1558060370-aba9b14b4237?w=800", sortOrder: 0 }],
+    category: { id: "c9", name: "Toys", slug: "toys" },
+    vendor: { id: "v4", storeName: "Home Comfort Co.", slug: "home-comfort" },
+  },
+  {
+    id: "demo-31",
+    name: "True Wireless Earbuds Pro",
+    slug: "demo-earbuds",
+    description: "",
+    price: 79.99,
+    brand: "SoundMax",
+    stock: 160,
+    rating: 4.6,
+    reviewCount: 892,
+    isFeatured: true,
+    images: [{ id: "31", url: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800", sortOrder: 0 }],
+    category: { id: "c1", name: "Audio", slug: "audio" },
+    vendor: { id: "v1", storeName: "TechHub Electronics", slug: "techhub-electronics" },
+  },
+  {
+    id: "demo-32",
+    name: "Ultrabook Laptop 14\"",
+    slug: "demo-laptop",
+    description: "",
+    price: 899.99,
+    brand: "ComputeX",
+    stock: 25,
+    rating: 4.7,
+    reviewCount: 56,
+    isFeatured: true,
+    images: [{ id: "32", url: "https://images.unsplash.com/photo-1496181133176-c407dc4b2d4f?w=800", sortOrder: 0 }],
+    category: { id: "c2", name: "Laptops", slug: "laptops" },
+    vendor: { id: "v1", storeName: "TechHub Electronics", slug: "techhub-electronics" },
+  },
 ];
 
 export const DEMO_VENDORS = [
@@ -391,4 +648,52 @@ export function toCategoryList(apiCategories: Category[]): ShopCategory[] {
 
 export function isDemoProduct(product: Product): boolean {
   return product.id.startsWith("demo-");
+}
+
+/** Filter demo catalog when API is unavailable (matches ?category=gaming etc.) */
+export function filterLocalDemoProducts(
+  products: Product[],
+  params: {
+    category?: string;
+    search?: string;
+    featured?: string;
+    brand?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    minRating?: string;
+  }
+): Product[] {
+  let list = [...products];
+
+  if (params.category) {
+    list = list.filter((p) =>
+      categoryMatches(p.category?.slug, params.category!)
+    );
+  }
+  if (params.search) {
+    const s = params.search.toLowerCase();
+    list = list.filter(
+      (p) =>
+        p.name.toLowerCase().includes(s) ||
+        (p.brand?.toLowerCase().includes(s) ?? false)
+    );
+  }
+  if (params.featured) list = list.filter((p) => p.isFeatured);
+  if (params.brand) {
+    list = list.filter(
+      (p) => p.brand?.toLowerCase() === params.brand!.toLowerCase()
+    );
+  }
+  if (params.minRating) {
+    const min = Number(params.minRating);
+    list = list.filter((p) => p.rating >= min);
+  }
+  if (params.minPrice) {
+    list = list.filter((p) => Number(p.price) >= Number(params.minPrice));
+  }
+  if (params.maxPrice) {
+    list = list.filter((p) => Number(p.price) <= Number(params.maxPrice));
+  }
+
+  return list;
 }

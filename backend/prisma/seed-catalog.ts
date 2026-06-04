@@ -1,5 +1,4 @@
 import type { PrismaClient } from "@prisma/client";
-import { BULK_PRODUCTS, type BulkProductSeed } from "../src/lib/catalog-bulk.js";
 
 const IMG = {
   audio: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
@@ -542,11 +541,148 @@ export const EXTRA_PRODUCTS: ProductSeed[] = [
     location: "Chicago, USA",
     image: IMG.toys,
   },
-];
-
-const ALL_EXTRA_PRODUCTS: ProductSeed[] = [
-  ...EXTRA_PRODUCTS,
-  ...(BULK_PRODUCTS as ProductSeed[]),
+  {
+    name: "Fighting Arcade Stick",
+    slug: "fighting-arcade-stick",
+    description: " Tournament-grade arcade stick for PC and console.",
+    price: 149.99,
+    brand: "GameZone",
+    stock: 35,
+    categorySlug: "gaming-accessories",
+    vendorKey: "gaming",
+    rating: 4.5,
+    reviewCount: 88,
+    location: "Seattle, USA",
+    image: IMG.controller,
+  },
+  {
+    name: "Handheld Retro Game Console",
+    slug: "handheld-retro-game-console",
+    description: "500 classic games built-in, 3.5-inch color screen.",
+    price: 49.99,
+    brand: "GameZone",
+    stock: 90,
+    categorySlug: "gaming-consoles",
+    vendorKey: "gaming",
+    rating: 4.3,
+    reviewCount: 201,
+    location: "Austin, USA",
+    image: IMG.switchImg,
+  },
+  {
+    name: "Women's Knit Cardigan",
+    slug: "womens-knit-cardigan",
+    description: "Soft knit layer for cool evenings, available in 6 colors.",
+    price: 42.99,
+    brand: "Style Avenue",
+    stock: 55,
+    categorySlug: "women",
+    vendorKey: "fashion",
+    rating: 4.4,
+    reviewCount: 72,
+    location: "Los Angeles, USA",
+    image: IMG.hoodie,
+  },
+  {
+    name: "Men's Leather Belt",
+    slug: "mens-leather-belt",
+    description: "Full-grain leather with brushed nickel buckle.",
+    price: 34.99,
+    brand: "Style Avenue",
+    stock: 100,
+    categorySlug: "fashion-accessories",
+    vendorKey: "fashion",
+    rating: 4.3,
+    reviewCount: 145,
+    location: "New York, USA",
+    image: IMG.bag,
+  },
+  {
+    name: "Memory Foam Throw Pillows (2-Pack)",
+    slug: "memory-foam-throw-pillows",
+    description: "Hypoallergenic covers, plush support for sofa or bed.",
+    price: 29.99,
+    brand: "Home Comfort Co.",
+    stock: 110,
+    categorySlug: "home-furniture",
+    vendorKey: "home",
+    rating: 4.5,
+    reviewCount: 198,
+    location: "Denver, USA",
+    image: IMG.sofa,
+  },
+  {
+    name: "Indoor Basketball",
+    slug: "indoor-basketball",
+    description: "Official size 7, composite leather grip.",
+    price: 24.99,
+    brand: "RunFast",
+    stock: 75,
+    categorySlug: "fitness",
+    vendorKey: "fashion",
+    rating: 4.2,
+    reviewCount: 56,
+    location: "Texas, USA",
+    image: IMG.dumbbell,
+  },
+  {
+    name: "Gentle Face Cleanser",
+    slug: "gentle-face-cleanser",
+    description: "Daily cleanser for all skin types, 200ml pump bottle.",
+    price: 18.99,
+    brand: "GlowLab",
+    stock: 180,
+    categorySlug: "skincare",
+    vendorKey: "fashion",
+    rating: 4.6,
+    reviewCount: 334,
+    location: "Miami, USA",
+    image: IMG.serum,
+  },
+  {
+    name: "11\" Tablet Wi-Fi 128GB",
+    slug: "tablet-wifi-128gb",
+    description: "Stunning display, all-day battery, perfect for streaming and work.",
+    price: 449.99,
+    comparePrice: 529.99,
+    brand: "TechHub",
+    stock: 40,
+    categorySlug: "phones",
+    vendorKey: "tech",
+    isFeatured: true,
+    rating: 4.5,
+    reviewCount: 167,
+    location: "California, USA",
+    image: IMG.phone,
+  },
+  {
+    name: "Science Fiction Classics Box Set",
+    slug: "science-fiction-classics-box-set",
+    description: "Five award-winning novels in a collectible slipcase.",
+    price: 54.99,
+    brand: "PageTurner",
+    stock: 45,
+    categorySlug: "books",
+    vendorKey: "home",
+    rating: 4.8,
+    reviewCount: 92,
+    location: "Boston, USA",
+    image: IMG.books,
+  },
+  {
+    name: "Remote Control Racing Car",
+    slug: "remote-control-racing-car",
+    description: "High-speed RC car with rechargeable battery and controller.",
+    price: 59.99,
+    brand: "PlayCraft",
+    stock: 50,
+    categorySlug: "toys",
+    vendorKey: "home",
+    rating: 4.7,
+    reviewCount: 118,
+    location: "Chicago, USA",
+    image: IMG.toys,
+  },
 ];
 
 export async function seedExtendedCategories(prisma: PrismaClient) {
@@ -639,57 +775,40 @@ export async function seedExtendedCategories(prisma: PrismaClient) {
   await upsertChild("makeup", "Makeup", "beauty", IMG.lipstick2.replace("w=800", "w=400"));
 }
 
-async function upsertCatalogProduct(
-  prisma: PrismaClient,
-  p: ProductSeed | BulkProductSeed,
-  vendors: Record<"tech" | "fashion" | "gaming" | "home", string>
-) {
-  const category = await prisma.category.findUniqueOrThrow({
-    where: { slug: p.categorySlug },
-  });
-  await prisma.product.upsert({
-    where: { slug: p.slug },
-    update: {
-      price: p.price,
-      stock: p.stock,
-      isFeatured: p.isFeatured ?? false,
-      comparePrice: p.comparePrice ?? null,
-    },
-    create: {
-      name: p.name,
-      slug: p.slug,
-      description: p.description,
-      price: p.price,
-      comparePrice: p.comparePrice,
-      brand: p.brand,
-      stock: p.stock,
-      categoryId: category.id,
-      vendorId: vendors[p.vendorKey],
-      isFeatured: p.isFeatured ?? false,
-      rating: p.rating ?? 4.0,
-      reviewCount: p.reviewCount ?? 0,
-      location: p.location ?? "USA",
-      images: {
-        create: [{ url: p.image, sortOrder: 0 }],
-      },
-    },
-  });
-}
-
 export async function seedExtraProducts(
   prisma: PrismaClient,
   vendors: Record<"tech" | "fashion" | "gaming" | "home", string>
 ) {
-  const total = ALL_EXTRA_PRODUCTS.length;
-  const batchSize = 8;
-  console.log(`Seeding ${total} catalog products...`);
-
-  for (let i = 0; i < total; i += batchSize) {
-    const batch = ALL_EXTRA_PRODUCTS.slice(i, i + batchSize);
-    for (const p of batch) {
-      await upsertCatalogProduct(prisma, p, vendors);
-    }
-    console.log(`  ${Math.min(i + batchSize, total)}/${total} products`);
-    await new Promise((r) => setTimeout(r, 150));
+  for (const p of EXTRA_PRODUCTS) {
+    const category = await prisma.category.findUniqueOrThrow({
+      where: { slug: p.categorySlug },
+    });
+    await prisma.product.upsert({
+      where: { slug: p.slug },
+      update: {
+        price: p.price,
+        stock: p.stock,
+        isFeatured: p.isFeatured ?? false,
+        comparePrice: p.comparePrice ?? null,
+      },
+      create: {
+        name: p.name,
+        slug: p.slug,
+        description: p.description,
+        price: p.price,
+        comparePrice: p.comparePrice,
+        brand: p.brand,
+        stock: p.stock,
+        categoryId: category.id,
+        vendorId: vendors[p.vendorKey],
+        isFeatured: p.isFeatured ?? false,
+        rating: p.rating ?? 4.0,
+        reviewCount: p.reviewCount ?? 0,
+        location: p.location ?? "USA",
+        images: {
+          create: [{ url: p.image, sortOrder: 0 }],
+        },
+      },
+    });
   }
 }
