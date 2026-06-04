@@ -1,5 +1,7 @@
 /** Demo catalog when database is not configured (local preview). */
 
+import { demoCategoryMatches } from "./demoCategoryGroups.js";
+
 const IMG = [
   "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
   "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
@@ -18,6 +20,8 @@ export const DEMO_CATEGORIES = [
   { id: "c-beauty", name: "Beauty & Health", slug: "beauty", _count: { products: 14 } },
   { id: "c-sports", name: "Sports & Outdoors", slug: "sports", _count: { products: 9 } },
   { id: "c-audio", name: "Audio", slug: "audio", _count: { products: 6 } },
+  { id: "c-books", name: "Books & Media", slug: "books", image: IMG[0], _count: { products: 8 } },
+  { id: "c-toys", name: "Toys & Kids", slug: "toys", image: IMG[5], _count: { products: 12 } },
 ];
 
 export const DEMO_PRODUCTS = [
@@ -140,6 +144,123 @@ export const DEMO_PRODUCTS = [
     images: [{ id: "i6", url: IMG[5], alt: null, sortOrder: 0 }],
     createdAt: new Date().toISOString(),
   },
+  {
+    id: "demo-7",
+    name: "RGB Mechanical Gaming Keyboard",
+    slug: "rgb-mechanical-gaming-keyboard",
+    description: "Hot-swappable switches with per-key RGB lighting.",
+    price: 119.99,
+    comparePrice: 149.99,
+    brand: "GameZone",
+    stock: 60,
+    rating: 4.6,
+    reviewCount: 198,
+    isFeatured: true,
+    isActive: true,
+    categoryId: "c-gaming",
+    category: { id: "c-gaming", name: "Gaming Accessories", slug: "gaming-accessories" },
+    vendorId: "v3",
+    vendor: { id: "v3", storeName: "GameZone Store", slug: "gamezone" },
+    images: [{ id: "i7", url: IMG[4], alt: null, sortOrder: 0 }],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "demo-8",
+    name: "Next-Gen Gaming Console",
+    slug: "next-gen-gaming-console",
+    description: "4K gaming with ray tracing and 1TB SSD storage.",
+    price: 499.99,
+    brand: "GameZone",
+    stock: 18,
+    rating: 4.9,
+    reviewCount: 89,
+    isFeatured: true,
+    isActive: true,
+    categoryId: "c-gaming",
+    category: { id: "c-gaming", name: "Consoles", slug: "gaming-consoles" },
+    vendorId: "v3",
+    vendor: { id: "v3", storeName: "GameZone Store", slug: "gamezone" },
+    images: [{ id: "i8", url: IMG[4], alt: null, sortOrder: 0 }],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "demo-9",
+    name: "Women's Summer Floral Midi Dress",
+    slug: "womens-summer-floral-midi-dress",
+    description: "Lightweight A-line dress for warm weather.",
+    price: 54.99,
+    comparePrice: 79.99,
+    brand: "Style Avenue",
+    stock: 70,
+    rating: 4.5,
+    reviewCount: 89,
+    isFeatured: true,
+    isActive: true,
+    categoryId: "c-fashion",
+    category: { id: "c-fashion", name: "Women", slug: "women" },
+    vendorId: "v2",
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+    images: [{ id: "i9", url: IMG[3], alt: null, sortOrder: 0 }],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "demo-10",
+    name: "Leather Crossbody Handbag",
+    slug: "leather-crossbody-handbag",
+    description: "Genuine leather with adjustable strap.",
+    price: 119.99,
+    comparePrice: 159.99,
+    brand: "Style Avenue",
+    stock: 40,
+    rating: 4.6,
+    reviewCount: 67,
+    isActive: true,
+    categoryId: "c-fashion",
+    category: { id: "c-fashion", name: "Accessories", slug: "fashion-accessories" },
+    vendorId: "v2",
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+    images: [{ id: "i10", url: IMG[3], alt: null, sortOrder: 0 }],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "demo-11",
+    name: "Men's Tailored Blazer",
+    slug: "mens-tailored-blazer",
+    description: "Slim fit blazer for office or evening wear.",
+    price: 159.99,
+    brand: "Style Avenue",
+    stock: 25,
+    rating: 4.4,
+    reviewCount: 38,
+    isFeatured: true,
+    isActive: true,
+    categoryId: "c-fashion",
+    category: { id: "c-fashion", name: "Men", slug: "men" },
+    vendorId: "v2",
+    vendor: { id: "v2", storeName: "Style Avenue", slug: "style-avenue" },
+    images: [{ id: "i11", url: IMG[2], alt: null, sortOrder: 0 }],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "demo-12",
+    name: "Modern L-Shaped Sectional Sofa",
+    slug: "modern-l-shaped-sectional-sofa",
+    description: "Plush seating for up to five with reversible chaise.",
+    price: 899.99,
+    comparePrice: 1199.99,
+    brand: "Home Comfort Co.",
+    stock: 8,
+    rating: 4.6,
+    reviewCount: 34,
+    isFeatured: true,
+    isActive: true,
+    categoryId: "c-home",
+    category: { id: "c-home", name: "Furniture", slug: "home-furniture" },
+    vendorId: "v4",
+    vendor: { id: "v4", storeName: "Home Comfort Co.", slug: "home-comfort" },
+    images: [{ id: "i12", url: IMG[1], alt: null, sortOrder: 0 }],
+    createdAt: new Date().toISOString(),
+  },
 ];
 
 export const DEMO_VENDORS = [
@@ -170,6 +291,15 @@ export const DEMO_VENDORS = [
     status: "APPROVED",
     _count: { products: 456 },
   },
+  {
+    id: "v4",
+    storeName: "Home Comfort Co.",
+    slug: "home-comfort",
+    description: "Furniture and home essentials.",
+    logo: null,
+    status: "APPROVED",
+    _count: { products: 320 },
+  },
 ];
 
 export function filterDemoProducts(query: {
@@ -198,10 +328,8 @@ export function filterDemoProducts(query: {
     );
   }
   if (query.category) {
-    list = list.filter(
-      (p) =>
-        p.category.slug === query.category ||
-        p.categoryId === query.category
+    list = list.filter((p) =>
+      demoCategoryMatches(p.category.slug, query.category!)
     );
   }
   if (query.brand) {

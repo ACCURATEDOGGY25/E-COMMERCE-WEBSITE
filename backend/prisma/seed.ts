@@ -1,5 +1,9 @@
 import { PrismaClient, Role, VendorStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import {
+  seedExtendedCategories,
+  seedExtraProducts,
+} from "./seed-catalog.js";
 
 const prisma = new PrismaClient();
 
@@ -164,6 +168,58 @@ async function main() {
   });
   await ensureCartAndWishlist(seller2!.id);
 
+  async function ensureVendorSeller(
+    email: string,
+    name: string,
+    storeName: string,
+    slug: string,
+    description: string,
+    logo?: string
+  ) {
+    await prisma.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        email,
+        passwordHash,
+        name,
+        role: Role.SELLER,
+        emailVerified: true,
+      },
+    });
+    const user = await prisma.user.findUniqueOrThrow({ where: { email } });
+    await prisma.vendor.upsert({
+      where: { userId: user.id },
+      update: { status: VendorStatus.APPROVED, storeName, description, logo },
+      create: {
+        userId: user.id,
+        storeName,
+        slug,
+        description,
+        status: VendorStatus.APPROVED,
+        logo,
+      },
+    });
+    await ensureCartAndWishlist(user.id);
+    return prisma.vendor.findUniqueOrThrow({ where: { userId: user.id } });
+  }
+
+  const gamingVendor = await ensureVendorSeller(
+    "gaming@demo.com",
+    "GameZone Owner",
+    "GameZone Store",
+    "gamezone",
+    "Consoles, games, controllers, and pro gaming gear.",
+    "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200"
+  );
+  const homeVendor = await ensureVendorSeller(
+    "home@demo.com",
+    "Home Comfort Owner",
+    "Home Comfort Co.",
+    "home-comfort",
+    "Furniture, kitchen essentials, and home décor."
+  );
+
   await prisma.category.upsert({
     where: { slug: "electronics" },
     update: {},
@@ -244,6 +300,8 @@ async function main() {
       image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400",
     },
   });
+
+  await seedExtendedCategories(prisma);
 
   const [audioId, phonesId, laptopsId, menId, womenId] = await Promise.all([
     getCategoryId("audio"),
@@ -374,6 +432,13 @@ async function main() {
     });
   }
 
+  await seedExtraProducts(prisma, {
+    tech: vendor1.id,
+    fashion: vendor2.id,
+    gaming: gamingVendor.id,
+    home: homeVendor.id,
+  });
+
   await prisma.coupon.upsert({
     where: { code: "WELCOME10" },
     update: {},
@@ -393,6 +458,8 @@ async function main() {
   console.log("  Customer: customer@demo.com");
   console.log("  Seller:   seller@demo.com");
   console.log("  Seller 2: fashion@demo.com");
+  console.log("  Seller 3: gaming@demo.com");
+  console.log("  Seller 4: home@demo.com");
 }
 
 main()

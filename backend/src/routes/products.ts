@@ -11,6 +11,7 @@ import {
   findDemoProduct,
   DEMO_PRODUCTS,
 } from "../lib/demoData.js";
+import { getCategoryDescendantIds } from "../lib/categoryTree.js";
 
 const router = Router();
 
@@ -74,9 +75,14 @@ router.get("/", optionalAuth, async (req, res, next) => {
     }
 
     if (category) {
-      where.category = {
-        OR: [{ slug: category }, { id: category }],
-      };
+      const categoryIds = await getCategoryDescendantIds(category);
+      if (categoryIds.length > 0) {
+        where.categoryId = { in: categoryIds };
+      } else {
+        where.category = {
+          OR: [{ slug: category }, { id: category }],
+        };
+      }
     }
 
     if (brand) where.brand = { equals: brand, mode: "insensitive" };
