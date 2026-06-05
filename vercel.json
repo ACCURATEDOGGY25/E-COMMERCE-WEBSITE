@@ -6,7 +6,7 @@
   "devCommand": "npm run dev",
   "rootDirectory": "frontend",
   "env": {
-    "API_URL": "https://brands-attempted-copied-yet.trycloudflare.com",
-    "NEXT_PUBLIC_API_URL": "https://brands-attempted-copied-yet.trycloudflare.com"
+    "API_URL": "https://tail-cultural-having-moses.trycloudflare.com",
+    "NEXT_PUBLIC_API_URL": "https://tail-cultural-having-moses.trycloudflare.com"
   }
 }
