@@ -6,7 +6,7 @@
   "devCommand": "npm run dev",
   "rootDirectory": "frontend",
   "env": {
-    "API_URL": "https://prostate-endless-compute-literally.trycloudflare.com",
-    "NEXT_PUBLIC_API_URL": "https://prostate-endless-compute-literally.trycloudflare.com"
+    "API_URL": "https://gravity-fin-primarily-phrase.trycloudflare.com",
+    "NEXT_PUBLIC_API_URL": "https://gravity-fin-primarily-phrase.trycloudflare.com"
   }
 }
