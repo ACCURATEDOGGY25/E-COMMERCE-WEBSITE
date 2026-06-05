@@ -15,7 +15,7 @@ if [ -f "$PID" ]; then
   old=$(cat "$PID" 2>/dev/null || true)
   if [ -n "$old" ] && kill -0 "$old" 2>/dev/null; then
     if curl -sf "http://127.0.0.1:${API_PORT:-4000}/health" >/dev/null 2>&1; then
-      API_PUBLIC="$(grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' "$LOG/tunnel-api.log" 2>/dev/null | tail -1 || true)"
+      API_PUBLIC="$(grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' "$LOG/tunnel-api.log" 2>/dev/null | grep -v 'api\.trycloudflare\.com' | tail -1 || true)"
       [ -n "$API_PUBLIC" ] && curl -sf "$API_PUBLIC/health" >/dev/null 2>&1 && {
         echo "Already running (pid $old). API: $API_PUBLIC"
         exit 0

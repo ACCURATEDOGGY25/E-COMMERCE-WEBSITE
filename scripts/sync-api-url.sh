@@ -10,6 +10,10 @@ if [ -z "$API_URL" ] && [ -f "$ROOT/PUBLIC_URLS.txt" ]; then
 fi
 API_URL="${API_URL%/}"
 [ -n "$API_URL" ] || { echo "Usage: bash scripts/sync-api-url.sh https://your-tunnel.trycloudflare.com [--force]"; exit 1; }
+if [[ "$API_URL" == *"api.trycloudflare.com"* ]]; then
+  echo "Error: invalid tunnel URL (api.trycloudflare.com is Cloudflare's API, not your tunnel)"
+  exit 1
+fi
 
 if [ "$FORCE" != "--force" ]; then
   curl -sf "$API_URL/health" >/dev/null || {

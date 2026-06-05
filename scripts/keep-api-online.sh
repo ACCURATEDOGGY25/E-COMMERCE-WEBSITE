@@ -45,13 +45,27 @@ pkill -f "cloudflared tunnel --url http://127.0.0.1:$API_PORT" 2>/dev/null || tr
 sleep 1
 : >"$LOG/tunnel-api.log"
 start_daemon "$LOG/tunnel-api.log" "$ROOT/.tools/cloudflared" tunnel --url "http://127.0.0.1:$API_PORT"
+tunnel_url_from_log() {
+  grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' "$LOG/tunnel-api.log" 2>/dev/null \
+    | grep -v 'api\.trycloudflare\.com' | tail -1 || true
+}
+
 API_PUBLIC=""
-for _ in $(seq 1 70); do
-  API_PUBLIC=$(grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' "$LOG/tunnel-api.log" 2>/dev/null | head -1 || true)
+for _ in $(seq 1 90); do
+  API_PUBLIC=$(tunnel_url_from_log)
   [ -n "$API_PUBLIC" ] && break
-  sleep 1
+  sleep 2
 done
-[ -n "$API_PUBLIC" ] || { echo "Tunnel failed"; exit 1; }
+if [ -z "$API_PUBLIC" ]; then
+  echo "Tunnel failed — check $LOG/tunnel-api.log (DNS/network?)"
+  exit 1
+fi
+echo "Tunnel URL: $API_PUBLIC (waiting for reachability...)"
+for _ in $(seq 1 90); do
+  curl -sf "$API_PUBLIC/health" >/dev/null 2>&1 && break
+  sleep 2
+done
+curl -sf "$API_PUBLIC/health" >/dev/null 2>&1 || echo "WARN: tunnel URL set but /health not reachable yet — continuing anyway"
 
 cat >"$URLS" <<EOF
 VERCEL_URL=$VERCEL_URL
@@ -95,10 +109,14 @@ while true; do
     sleep 1
     : >"$LOG/tunnel-api.log"
     start_daemon "$LOG/tunnel-api.log" "$ROOT/.tools/cloudflared" tunnel --url "http://127.0.0.1:$API_PORT"
-    for _ in $(seq 1 40); do
-      API_PUBLIC=$(grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' "$LOG/tunnel-api.log" 2>/dev/null | tail -1 || true)
-      [ -n "$API_PUBLIC" ] && curl -sf "$API_PUBLIC/health" >/dev/null 2>&1 && break
-      sleep 1
+    for _ in $(seq 1 60); do
+      API_PUBLIC=$(tunnel_url_from_log)
+      [ -n "$API_PUBLIC" ] && break
+      sleep 2
+    done
+    for _ in $(seq 1 60); do
+      curl -sf "$API_PUBLIC/health" >/dev/null 2>&1 && break
+      sleep 2
     done
     if [ -n "${API_PUBLIC:-}" ]; then
       bash "$ROOT/scripts/sync-api-url.sh" "$API_PUBLIC" --force 2>/dev/null || true

@@ -29,7 +29,13 @@ if [ -f "$ROOT/PUBLIC_URLS.txt" ]; then
   grep -E '^API_URL=' "$ROOT/PUBLIC_URLS.txt" || true
   API_TUNNEL=$(grep '^API_URL=' "$ROOT/PUBLIC_URLS.txt" | cut -d= -f2-)
   if [ -n "$API_TUNNEL" ]; then
-    curl -sf "$API_TUNNEL/health" >/dev/null && echo "  tunnel: OK" || echo "  tunnel: down"
+    if [[ "$API_TUNNEL" == *"api.trycloudflare.com"* ]]; then
+      echo "  tunnel: INVALID URL (re-run keep-api-online.sh)"
+    elif curl -sf "$API_TUNNEL/health" >/dev/null; then
+      echo "  tunnel: OK"
+    else
+      echo "  tunnel: down"
+    fi
   fi
 fi
 
