@@ -6,7 +6,7 @@
   "devCommand": "npm run dev",
   "rootDirectory": "frontend",
   "env": {
-    "API_URL": "https://environments-approval-margaret-incoming.trycloudflare.com",
-    "NEXT_PUBLIC_API_URL": "https://environments-approval-margaret-incoming.trycloudflare.com"
+    "API_URL": "https://api.trycloudflare.com",
+    "NEXT_PUBLIC_API_URL": "https://api.trycloudflare.com"
   }
 }
