@@ -6,7 +6,7 @@
   "devCommand": "npm run dev",
   "rootDirectory": "frontend",
   "env": {
-    "API_URL": "https://spots-bugs-charm-programmers.trycloudflare.com",
-    "NEXT_PUBLIC_API_URL": "https://spots-bugs-charm-programmers.trycloudflare.com"
+    "API_URL": "https://impressed-segments-attorney-plasma.trycloudflare.com",
+    "NEXT_PUBLIC_API_URL": "https://impressed-segments-attorney-plasma.trycloudflare.com"
   }
 }

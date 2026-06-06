@@ -28,6 +28,7 @@ interface Props {
 }
 
 export function ProductReviews({ productId, productSlug, initialReviews }: Props) {
+  const previewOnly = productId.startsWith("demo-");
   const { token } = useAuthStore();
   const [reviews, setReviews] = useState(initialReviews);
   const [rating, setRating] = useState(5);
@@ -70,7 +71,11 @@ export function ProductReviews({ productId, productSlug, initialReviews }: Props
     <section className="mt-16">
       <h2 className="text-xl font-bold">Customer Reviews</h2>
 
-      {token ? (
+      {previewOnly ? (
+        <p className="mt-4 text-sm text-amber-800">
+          Reviews are unavailable for preview products.
+        </p>
+      ) : token ? (
         <form onSubmit={handleSubmit} className="card mt-6 space-y-4 p-6">
           <h3 className="font-medium">Write a review</h3>
           <div className="flex gap-1">

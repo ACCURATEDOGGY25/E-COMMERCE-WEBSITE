@@ -253,6 +253,10 @@ const googleSchema = z.object({
 
 router.post("/google", validateBody(googleSchema), async (req, res, next) => {
   try {
+    if (isDemoMode()) {
+      throw new AppError(503, DEMO_AUTH_MSG, "DEMO_MODE");
+    }
+
     const { googleId, email, name, avatar } = req.body;
 
     let user = await prisma.user.findFirst({

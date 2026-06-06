@@ -22,7 +22,13 @@ function LoginForm() {
       await login(email, password);
       router.push(redirect);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Login failed");
+      if (err instanceof ApiError && err.status === 503) {
+        setError(
+          "Database not connected. Run bash scripts/setup.sh locally, or resume the API on Render."
+        );
+      } else {
+        setError(err instanceof ApiError ? err.message : "Login failed");
+      }
     }
   }
 
@@ -31,7 +37,7 @@ function LoginForm() {
       <div className="card p-8">
         <h1 className="text-2xl font-bold">Sign in</h1>
         <p className="mt-2 text-sm text-gray-600">
-          Demo: customer@demo.com / Password123!
+          Demo (with database): customer@demo.com / Password123!
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth";
+import { useSellerGuard } from "@/hooks/useSellerGuard";
 import { api, ApiError } from "@/lib/api";
 import { ImageUploadField } from "@/components/seller/ImageUploadField";
 import type { Category, Product } from "@/types";
@@ -12,6 +13,7 @@ export default function EditProductPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const { token } = useAuthStore();
+  const { allowed } = useSellerGuard(`/seller/products/${id}/edit`);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -29,10 +31,7 @@ export default function EditProductPage() {
   });
 
   useEffect(() => {
-    if (!token) {
-      router.push(`/login?redirect=/seller/products/${id}/edit`);
-      return;
-    }
+    if (!token || !allowed) return;
 
     Promise.all([
       api<{ data: Category[] }>("/api/categories"),

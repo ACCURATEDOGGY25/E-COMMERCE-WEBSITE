@@ -74,7 +74,10 @@ export default function AccountPage() {
     setNotifications((n) => n.map((x) => ({ ...x, read: true })));
   }
 
-  if (!token || !user) return null;
+  if (!token) return null;
+  if (!user) {
+    return <p className="p-16 text-center text-gray-500">Loading account...</p>;
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">

@@ -59,30 +59,40 @@ export const useCartStore = create<CartState>((set) => ({
   updateQuantity: async (itemId, quantity) => {
     const token = useAuthStore.getState().token;
     if (!token) return;
-    const res = await api<{ data: Cart }>(`/api/cart/items/${itemId}`, {
-      method: "PATCH",
-      token,
-      body: JSON.stringify({ quantity }),
-    });
-    const subtotal = res.data.items.reduce(
-      (sum, i) => sum + Number(i.product.price) * i.quantity,
-      0
-    );
-    set({ cart: res.data, subtotal });
+    set({ isLoading: true });
+    try {
+      const res = await api<{ data: Cart }>(`/api/cart/items/${itemId}`, {
+        method: "PATCH",
+        token,
+        body: JSON.stringify({ quantity }),
+      });
+      const subtotal = res.data.items.reduce(
+        (sum, i) => sum + Number(i.product.price) * i.quantity,
+        0
+      );
+      set({ cart: res.data, subtotal });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   removeItem: async (itemId) => {
     const token = useAuthStore.getState().token;
     if (!token) return;
-    const res = await api<{ data: Cart }>(`/api/cart/items/${itemId}`, {
-      method: "DELETE",
-      token,
-    });
-    const subtotal = res.data.items.reduce(
-      (sum, i) => sum + Number(i.product.price) * i.quantity,
-      0
-    );
-    set({ cart: res.data, subtotal });
+    set({ isLoading: true });
+    try {
+      const res = await api<{ data: Cart }>(`/api/cart/items/${itemId}`, {
+        method: "DELETE",
+        token,
+      });
+      const subtotal = res.data.items.reduce(
+        (sum, i) => sum + Number(i.product.price) * i.quantity,
+        0
+      );
+      set({ cart: res.data, subtotal });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   clearCart: async () => {

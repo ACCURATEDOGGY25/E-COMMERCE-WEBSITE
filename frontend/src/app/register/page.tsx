@@ -33,6 +33,12 @@ function RegisterForm() {
       });
       router.push(role === "SELLER" ? "/seller" : "/");
     } catch (err) {
+      if (err instanceof ApiError && err.status === 503) {
+        setError(
+          "Database not connected. Run bash scripts/setup.sh locally, or resume the API on Render."
+        );
+        return;
+      }
       setError(err instanceof ApiError ? err.message : "Registration failed");
     }
   }

@@ -5,6 +5,17 @@ export function getUpstreamApiUrl(): string {
     process.env.NEXT_PUBLIC_API_URL?.trim() ||
     "";
   if (fromEnv) return fromEnv.replace(/\/$/, "");
-  // Default production API (set API_URL in Vercel env when Render is live)
-  return "https://markethub-api.onrender.com";
+
+  if (process.env.NODE_ENV === "development") {
+    return "http://localhost:4000";
+  }
+
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}/api/backend`;
+  }
+
+  return (
+    process.env.RENDER_API_URL?.trim()?.replace(/\/$/, "") ||
+    "https://markethub-api.onrender.com"
+  );
 }

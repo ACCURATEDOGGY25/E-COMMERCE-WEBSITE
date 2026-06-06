@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Package, DollarSign, ShoppingBag, Plus } from "lucide-react";
-import { useAuthStore } from "@/store/auth";
-import { api } from "@/lib/api";
+import { useSellerGuard } from "@/hooks/useSellerGuard";
+import { api, ApiError } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 
 interface DashboardData {
@@ -26,25 +25,25 @@ interface DashboardData {
 }
 
 export default function SellerDashboardPage() {
-  const router = useRouter();
-  const { token, user } = useAuthStore();
+  const { token, allowed } = useSellerGuard("/seller");
   const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!token) {
-      router.push("/login?redirect=/seller");
-      return;
-    }
-    if (user && user.role !== "SELLER" && user.role !== "ADMIN") {
-      router.push("/");
-      return;
-    }
+    if (!token || !allowed) return;
+    setLoading(true);
+    setError("");
     api<{ data: DashboardData }>("/api/seller/dashboard", { token })
       .then((res) => setData(res.data))
-      .catch(() => setData(null));
-  }, [token, user, router]);
+      .catch((err) => {
+        setData(null);
+        setError(err instanceof ApiError ? err.message : "Failed to load dashboard");
+      })
+      .finally(() => setLoading(false));
+  }, [token, allowed]);
 
-  if (!token) return null;
+  if (!allowed) return null;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -63,11 +62,20 @@ export default function SellerDashboardPage() {
           <Link href="/seller/products" className="btn-secondary">
             Manage Products
           </Link>
+          <Link href="/seller/orders" className="btn-secondary">
+            Orders
+          </Link>
         </div>
       </div>
 
-      {!data ? (
+      {error && (
+        <div className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</div>
+      )}
+
+      {loading ? (
         <p className="mt-8 text-gray-500">Loading dashboard...</p>
+      ) : !data ? (
+        <p className="mt-8 text-gray-500">Could not load dashboard.</p>
       ) : (
         <>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -103,8 +111,11 @@ export default function SellerDashboardPage() {
           </div>
 
           <div className="card mt-8">
-            <div className="border-b px-6 py-4">
+            <div className="flex items-center justify-between border-b px-6 py-4">
               <h2 className="font-semibold">Recent Orders</h2>
+              <Link href="/seller/orders" className="text-sm text-primary-600 hover:underline">
+                View all
+              </Link>
             </div>
             {data.recentOrders.length === 0 ? (
               <p className="p-6 text-gray-500">No orders yet</p>

@@ -2,28 +2,54 @@
 
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 import type { Order } from "@/types";
 
 function OrderDetail() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const success = searchParams.get("success");
   const { token } = useAuthStore();
   const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!token || !id) return;
+    if (!token) {
+      router.push(`/login?redirect=/orders/${id}`);
+      return;
+    }
+    if (!id) return;
+    setLoading(true);
+    setError("");
     api<{ data: Order }>(`/api/orders/${id}`, { token })
       .then((res) => setOrder(res.data))
-      .catch(() => setOrder(null));
-  }, [token, id]);
+      .catch((err) => {
+        setOrder(null);
+        setError(err instanceof ApiError ? err.message : "Order not found");
+      })
+      .finally(() => setLoading(false));
+  }, [token, id, router]);
 
-  if (!order) {
-    return <p className="p-16 text-center text-gray-500">Loading...</p>;
+  if (!token) return null;
+
+  if (loading) {
+    return <p className="p-16 text-center text-gray-500">Loading order...</p>;
+  }
+
+  if (error || !order) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <p className="text-gray-600">{error || "Order not found"}</p>
+        <Link href="/account" className="mt-4 inline-block text-primary-600 hover:underline">
+          Back to account
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -48,46 +74,28 @@ function OrderDetail() {
         </div>
         {order.trackingNumber && (
           <p className="mt-4 text-sm">
-            Tracking: <strong>{order.trackingNumber}</strong>
+            Tracking: <span className="font-mono">{order.trackingNumber}</span>
           </p>
         )}
+        <p className="mt-4 text-lg font-bold">
+          Total: {formatPrice(order.total)}
+        </p>
       </div>
 
       <div className="card mt-6 divide-y">
         {order.items.map((item) => (
-          <div key={item.id} className="flex justify-between p-4">
+          <div key={item.id} className="flex justify-between px-6 py-4">
             <div>
-              <p className="font-medium">{item.name}</p>
-              <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+              <p className="font-medium">{item.name || item.product?.name}</p>
+              <p className="text-sm text-gray-500">Qty {item.quantity}</p>
             </div>
             <p className="font-medium">{formatPrice(item.price)}</p>
           </div>
         ))}
       </div>
 
-      <div className="card mt-6 p-6">
-        <dl className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <dt>Subtotal</dt>
-            <dd>{formatPrice(order.subtotal)}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt>Shipping</dt>
-            <dd>{formatPrice(order.shipping)}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt>Tax</dt>
-            <dd>{formatPrice(order.tax)}</dd>
-          </div>
-          <div className="flex justify-between border-t pt-2 text-lg font-bold">
-            <dt>Total</dt>
-            <dd>{formatPrice(order.total)}</dd>
-          </div>
-        </dl>
-      </div>
-
-      <Link href="/orders" className="btn-secondary mt-8 inline-flex">
-        Back to Orders
+      <Link href="/account" className="mt-6 inline-block text-primary-600 hover:underline">
+        ← Back to account
       </Link>
     </div>
   );
