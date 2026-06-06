@@ -76,8 +76,8 @@ Updated=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 EOF
 
 bash "$ROOT/scripts/sync-api-url.sh" "$API_PUBLIC" --force 2>/dev/null || true
-if ! git -C "$ROOT" diff --quiet vercel.json 2>/dev/null; then
-  (cd "$ROOT" && git add vercel.json && git commit -m "chore: update API tunnel URL" 2>/dev/null && bash "$ROOT/scripts/push-github.sh" >>"$LOG/vercel-sync.log" 2>&1) &
+if ! git -C "$ROOT" diff --quiet config/production-api-url.txt 2>/dev/null; then
+  (cd "$ROOT" && git add config/production-api-url.txt && git commit -m "chore: update API URL" 2>/dev/null && bash "$ROOT/scripts/push-github.sh" >>"$LOG/vercel-sync.log" 2>&1) &
 fi
 
 echo ""

@@ -20,30 +20,19 @@ if [ "$code" != "200" ] || ! grep -q '"status":"ok"' /tmp/render-health.json 2>/
 fi
 echo "Render API: OK"
 
+echo "$API_URL" > "$ROOT/config/production-api-url.txt"
 node -e "
 const fs = require('fs');
 const root = process.argv[1];
 const api = process.argv[2];
-const files = [
-  [root + '/vercel.json', (p) => {
-    const j = JSON.parse(fs.readFileSync(p, 'utf8'));
-    j.env = j.env || {};
-    j.env.API_URL = api;
-    j.env.NEXT_PUBLIC_API_URL = api;
-    fs.writeFileSync(p, JSON.stringify(j, null, 2) + '\n');
-  }],
-  [root + '/frontend/.env.production', (p) => {
-    fs.writeFileSync(p, 'API_URL=' + api + '\nNEXT_PUBLIC_API_URL=' + api + '\n');
-  }],
-];
-for (const [p, fn] of files) fn(p);
+fs.writeFileSync(root + '/frontend/.env.production', 'API_URL=' + api + '\nNEXT_PUBLIC_API_URL=' + api + '\n');
 " "$ROOT" "$API_URL"
 
-echo "Updated vercel.json + frontend/.env.production"
+echo "Updated config/production-api-url.txt"
 echo ""
 echo "Next:"
-echo "  1. Vercel dashboard → API_URL = $API_URL → Redeploy (if not using git deploy)"
-echo "  2. git add vercel.json frontend/.env.production && git commit && git push"
+echo "  1. Vercel dashboard → API_URL = $API_URL → Redeploy (optional if using git deploy)"
+echo "  2. git add config/production-api-url.txt && git commit && git push"
 echo "  3. You can stop keep-api-online.sh on your Mac"
 echo ""
 if command -v pbcopy >/dev/null; then

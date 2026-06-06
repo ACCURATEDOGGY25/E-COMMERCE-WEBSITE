@@ -22,14 +22,12 @@ if [ "$FORCE" != "--force" ]; then
   }
 fi
 
+mkdir -p "$ROOT/config"
+echo "$API_URL" > "$ROOT/config/production-api-url.txt"
 node -e "
 const fs = require('fs');
 const root = process.argv[1];
 const api = process.argv[2];
-const vercel = root + '/vercel.json';
-const j = JSON.parse(fs.readFileSync(vercel, 'utf8'));
-j.env = { API_URL: api, NEXT_PUBLIC_API_URL: api };
-fs.writeFileSync(vercel, JSON.stringify(j, null, 2) + '\n');
 fs.writeFileSync(
   root + '/frontend/.env.production',
   'API_URL=' + api + '\nNEXT_PUBLIC_API_URL=' + api + '\n'
@@ -38,5 +36,5 @@ const urls = 'VERCEL_URL=https://esite2026.vercel.app\nAPI_URL=' + api + '\nLOCA
 fs.writeFileSync(root + '/PUBLIC_URLS.txt', urls);
 " "$ROOT" "$API_URL"
 
-echo "Synced API_URL=$API_URL"
-echo "Run: git add vercel.json frontend/.env.production && git commit -m 'Update API tunnel URL' && git push"
+echo "Synced API_URL=$API_URL → config/production-api-url.txt"
+echo "Run: git add config/production-api-url.txt && git commit -m 'Update API URL' && git push"

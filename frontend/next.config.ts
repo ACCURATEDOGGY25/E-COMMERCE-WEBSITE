@@ -4,24 +4,22 @@ import { join } from "path";
 
 const isDev = process.env.NODE_ENV === "development";
 
-/** Bake tunnel/API URL from repo vercel.json when Vercel dashboard env is unset. */
-function apiUrlFromVercelJson(): string {
+/** API URL for production builds (dashboard env overrides this file). */
+function productionApiUrl(): string {
+  const fromEnv =
+    process.env.NEXT_PUBLIC_API_URL?.trim() || process.env.API_URL?.trim() || "";
+  if (fromEnv) return fromEnv.replace(/\/$/, "");
   try {
-    const raw = readFileSync(join(__dirname, "..", "vercel.json"), "utf8");
-    const j = JSON.parse(raw) as { env?: { API_URL?: string; NEXT_PUBLIC_API_URL?: string } };
-    return (
-      process.env.NEXT_PUBLIC_API_URL?.trim() ||
-      process.env.API_URL?.trim() ||
-      j.env?.NEXT_PUBLIC_API_URL?.trim() ||
-      j.env?.API_URL?.trim() ||
-      ""
-    );
+    const file = readFileSync(join(__dirname, "..", "config", "production-api-url.txt"), "utf8");
+    const url = file.trim().split("\n")[0]?.trim();
+    if (url && !url.startsWith("#")) return url.replace(/\/$/, "");
   } catch {
-    return process.env.NEXT_PUBLIC_API_URL?.trim() || process.env.API_URL?.trim() || "";
+    /* optional file */
   }
+  return "https://markethub-api.onrender.com";
 }
 
-const publicApiUrl = apiUrlFromVercelJson();
+const publicApiUrl = productionApiUrl();
 
 const nextConfig: NextConfig = {
   env: {
